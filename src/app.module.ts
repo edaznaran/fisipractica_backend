@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CompanyModule } from './company/company.module';
+import { Company } from './company/entities/company.entity';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 
@@ -16,10 +18,11 @@ import { UserModule } from './user/user.module';
       username: process.env.PGUSER,
       password: process.env.PGPASSWORD,
       database: process.env.PGDATABASE,
-      entities: [User],
+      entities: [User, Company],
       synchronize: true,
     }),
     UserModule,
+    CompanyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
