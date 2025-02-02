@@ -1,7 +1,9 @@
+import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -31,4 +33,7 @@ export class Company {
 
   @UpdateDateColumn()
   updated_date: Date;
+
+  @OneToMany(() => Recruiter, (recruiter) => recruiter.company)
+  recruiters: Recruiter[];
 }
