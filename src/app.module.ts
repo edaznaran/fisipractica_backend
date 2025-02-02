@@ -5,6 +5,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CompanyModule } from './company/company.module';
 import { Company } from './company/entities/company.entity';
+import { Recruiter } from './recruiter/entities/recruiter.entity';
+import { RecruiterModule } from './recruiter/recruiter.module';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 
@@ -18,11 +20,12 @@ import { UserModule } from './user/user.module';
       username: process.env.PGUSER,
       password: process.env.PGPASSWORD,
       database: process.env.PGDATABASE,
-      entities: [User, Company],
+      entities: [User, Company, Recruiter],
       synchronize: true,
     }),
     UserModule,
     CompanyModule,
+    RecruiterModule,
   ],
   controllers: [AppController],
   providers: [AppService],
