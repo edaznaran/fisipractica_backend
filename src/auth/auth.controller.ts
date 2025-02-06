@@ -8,6 +8,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { LogInDto } from './dto/log-in.dto';
@@ -28,7 +29,7 @@ export class AuthController {
 
   @Get('profile')
   @ApiOperation({ summary: 'Obtener perfil' })
-  getProfile(@Req() req) {
+  getProfile(@Req() req: Request) {
     return req.user;
   }
 
