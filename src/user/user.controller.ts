@@ -8,15 +8,18 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Public } from 'src/auth/decorators/public.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 
+@ApiBearerAuth('JWT-auth')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Public()
   @Post()
   @ApiOperation({ summary: 'Crear usuario' })
   create(@Body() createUserDto: CreateUserDto) {

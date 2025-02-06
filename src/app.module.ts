@@ -5,6 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { ActiveToken } from './auth/entities/active-token.entity';
+import { BlacklistedToken } from './auth/entities/blacklisted-token.entity';
+import { Log } from './auth/entities/log.entity';
 import { JwtAuthGuard } from './auth/guards/auth.guard';
 import { CompanyModule } from './company/company.module';
 import { Company } from './company/entities/company.entity';
@@ -25,14 +28,22 @@ import { UserModule } from './user/user.module';
       username: process.env.PGUSER,
       password: process.env.PGPASSWORD,
       database: process.env.PGDATABASE,
-      entities: [User, Company, Recruiter, Student],
+      entities: [
+        User,
+        Company,
+        Recruiter,
+        Student,
+        ActiveToken,
+        BlacklistedToken,
+        Log,
+      ],
       synchronize: true,
     }),
+    AuthModule,
     UserModule,
     CompanyModule,
     RecruiterModule,
     StudentModule,
-    AuthModule,
   ],
   controllers: [AppController],
   providers: [
