@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Role } from '../enums/role.enum';
+import { UserProfile } from './user_profile.entity';
 
 @Entity()
 export class User {
@@ -12,20 +15,23 @@ export class User {
   id: number;
 
   @Column()
-  name: string;
-
-  @Column()
   email: string;
 
   @Column()
   password: string;
 
+  @Column({ enum: Role, nullable: true })
+  role: Role;
+
   @Column({ default: true })
   active: boolean;
 
   @CreateDateColumn()
-  created_date: Date;
+  create_date: Date;
 
   @UpdateDateColumn()
-  updated_date: Date;
+  update_date: Date;
+
+  @OneToOne(() => UserProfile, (profile) => profile.user)
+  profile: UserProfile;
 }
