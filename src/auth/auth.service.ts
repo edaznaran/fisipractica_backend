@@ -34,6 +34,9 @@ export class AuthService {
         logInDto.email,
         logInDto.role,
       );
+      if (user.active === false) {
+        throw new UnauthorizedException('Usuario inactivo.');
+      }
       if (!user || !user.password) {
         throw new UnauthorizedException('Credenciales inválidas.');
       }
