@@ -1,10 +1,12 @@
 import {
+  ConflictException,
   HttpException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MinioService } from 'src/minio/minio.service';
 import { User } from 'src/user/entities/user.entity';
 import { UserProfile } from 'src/user/entities/user_profile.entity';
 import { Role } from 'src/user/enums/role.enum';
@@ -12,8 +14,9 @@ import { DataSource, Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { Skill } from './entities/skill.entity';
-import { Student } from './entities/student.entity';
 import { StudentSkill } from './entities/strudent_skill.entity';
+import { Student } from './entities/student.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class StudentService {
@@ -21,13 +24,28 @@ export class StudentService {
     @InjectRepository(Student)
     private readonly studentRepository: Repository<Student>,
     private readonly dataSource: DataSource,
+    private readonly minioService: MinioService,
   ) {}
+
   async create(createStudentDto: CreateStudentDto, cv: Express.Multer.File) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      const userExists = await queryRunner.manager.findOne(User, {
+        where: { email: createStudentDto.email, role: Role.STUDENT },
+      });
+      if (userExists) {
+        throw new ConflictException('El usuario ya existe');
+      }
+      console.log('createStudentDto:', createStudentDto);
       // Crea un nuevo usuario estudiante
+      const saltOrRounds = 10;
+      const hashedpassword = await bcrypt.hash(
+        createStudentDto.password,
+        saltOrRounds,
+      );
+      createStudentDto.password = hashedpassword;
       const user = queryRunner.manager.create(User, {
         email: createStudentDto.email,
         password: createStudentDto.password,
@@ -44,20 +62,6 @@ export class StudentService {
         location: createStudentDto.location,
       });
       const savedUserProfile = await queryRunner.manager.save(userProfile);
-      // Busca skills
-      const Skills = new Array<Skill>();
-      for (const skill of createStudentDto.skills) {
-        const foundedSkill = await queryRunner.manager.findOne(Skill, {
-          where: { name: skill },
-        });
-        if (foundedSkill) {
-          Skills.push(foundedSkill);
-        } else {
-          const newSkill = queryRunner.manager.create(Skill, { name: skill });
-          const savedSkill = await queryRunner.manager.save(newSkill);
-          Skills.push(savedSkill);
-        }
-      }
       // Crea un nuevo estudiante
       const student = queryRunner.manager.create(Student, {
         user: savedUser,
@@ -70,12 +74,49 @@ export class StudentService {
         availability: createStudentDto.availability,
       });
 
+      // Sube el archivo al servidor Minio
+      if (cv) {
+        const fileBuffer = Buffer.isBuffer(cv.buffer)
+          ? cv.buffer
+          : Buffer.from(cv.buffer);
+
+        const url = await this.minioService.uploadFile(
+          'student-files',
+          cv.originalname,
+          fileBuffer,
+          'pdf',
+        );
+        student.cv_url = url;
+      }
       const savedStudent = await queryRunner.manager.save(student);
-      const studentSkill = queryRunner.manager.create(StudentSkill, {
-        student: savedStudent,
-        skills: Skills,
-      });
-      await queryRunner.manager.save(studentSkill);
+      // Busca skills
+      const Skills = new Array<Skill>();
+      const skillsArray = createStudentDto.skills
+        .split(',')
+        .map((skill) => skill.trim());
+      for (const skill of skillsArray) {
+        const foundedSkill = await queryRunner.manager.findOne(Skill, {
+          where: { name: skill },
+        });
+        let studentSkill: StudentSkill;
+        if (foundedSkill) {
+          Skills.push(foundedSkill);
+          studentSkill = queryRunner.manager.create(StudentSkill, {
+            student: savedStudent,
+            skill: foundedSkill,
+          });
+        } else {
+          const newSkill = queryRunner.manager.create(Skill, { name: skill });
+          const savedSkill = await queryRunner.manager.save(newSkill);
+          Skills.push(savedSkill);
+          studentSkill = queryRunner.manager.create(StudentSkill, {
+            student: savedStudent,
+            skill: savedSkill,
+          });
+        }
+        await queryRunner.manager.save(studentSkill);
+      }
+      await queryRunner.commitTransaction();
       return savedStudent;
     } catch (error) {
       await queryRunner.rollbackTransaction();
