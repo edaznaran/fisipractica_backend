@@ -24,6 +24,7 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })
   signIn(@Body() logInDto: LogInDto) {
+    console.log('logInDto:', logInDto);
     return this.authService.logIn(logInDto);
   }
 
