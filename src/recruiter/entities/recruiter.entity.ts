@@ -1,10 +1,12 @@
 import { Company } from 'src/company/entities/company.entity';
+import { UserProfile } from 'src/user/entities/user_profile.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -18,8 +20,9 @@ export class Recruiter {
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @Column()
-  code: string;
+  @OneToOne(() => UserProfile, (user) => user.recruiter)
+  @JoinColumn({ name: 'user_id' })
+  userProfile: UserProfile;
 
   @Column()
   description: string;

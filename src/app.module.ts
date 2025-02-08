@@ -9,16 +9,18 @@ import { ActiveToken } from './auth/entities/active-token.entity';
 import { BlacklistedToken } from './auth/entities/blacklisted-token.entity';
 import { Log } from './auth/entities/log.entity';
 import { JwtAuthGuard } from './auth/guards/auth.guard';
+import { RolesGuard } from './auth/guards/roles.guard';
 import { CompanyModule } from './company/company.module';
 import { Company } from './company/entities/company.entity';
 import { Recruiter } from './recruiter/entities/recruiter.entity';
 import { RecruiterModule } from './recruiter/recruiter.module';
+import { Skill } from './student/entities/skill.entity';
+import { StudentSkill } from './student/entities/strudent_skill.entity';
 import { Student } from './student/entities/student.entity';
 import { StudentModule } from './student/student.module';
 import { User } from './user/entities/user.entity';
-import { UserModule } from './user/user.module';
 import { UserProfile } from './user/entities/user_profile.entity';
-import { RolesGuard } from './auth/guards/roles.guard';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { RolesGuard } from './auth/guards/roles.guard';
         Company,
         Recruiter,
         Student,
+        StudentSkill,
+        Skill,
         ActiveToken,
         BlacklistedToken,
         Log,

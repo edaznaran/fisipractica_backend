@@ -8,6 +8,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Student } from 'src/student/entities/student.entity';
+import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
 
 @Entity()
 export class UserProfile {
@@ -15,7 +17,7 @@ export class UserProfile {
   id: number;
 
   @OneToOne(() => User, (user) => user.profile)
-  @JoinColumn({ name: 'user_code' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @Column()
@@ -38,4 +40,10 @@ export class UserProfile {
 
   @UpdateDateColumn()
   update_date: Date;
+
+  @OneToOne(() => Student, (student) => student.userProfile)
+  student: Student;
+
+  @OneToOne(() => Recruiter, (recruiter) => recruiter.userProfile)
+  recruiter: Recruiter;
 }

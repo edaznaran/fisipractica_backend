@@ -1,15 +1,45 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsDateString, IsString } from 'class-validator';
+import {
+  IsBooleanString,
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateStudentDto {
+  // User data
   @ApiProperty()
   @IsString()
-  code: string;
+  @IsNotEmpty()
+  email: string;
 
   @ApiProperty()
   @IsString()
-  cv_url: string;
+  @IsNotEmpty()
+  password: string;
 
+  // UserProfile data
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  first_name: string;
+
+  @ApiProperty()
+  @IsString()
+  last_name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  phone: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  location: string;
+
+  // Student data
   @ApiProperty()
   @IsString()
   institution: string;
@@ -23,10 +53,21 @@ export class CreateStudentDto {
   education_end_date: Date;
 
   @ApiProperty()
-  @IsBoolean()
+  @IsBooleanString()
   studying: boolean;
 
   @ApiProperty()
   @IsString()
   description: string;
+
+  @ApiProperty()
+  @IsString()
+  availability: string;
+
+  @ApiProperty()
+  @IsString()
+  skills: string[];
+
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  cv: Express.Multer.File;
 }

@@ -1,20 +1,27 @@
+import { UserProfile } from 'src/user/entities/user_profile.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Skill } from './skill.entity';
+import { StudentSkill } from './strudent_skill.entity';
 
 @Entity()
 export class Student {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  code: string;
+  @OneToOne(() => UserProfile, (user) => user.student)
+  @JoinColumn({ name: 'user_id' })
+  userProfile: UserProfile;
 
-  @Column()
+  @Column({ nullable: true })
   cv_url: string;
 
   @Column()
@@ -31,6 +38,12 @@ export class Student {
 
   @Column({ type: 'text' })
   description: string;
+
+  @Column({ nullable: true })
+  availability: string;
+
+  @OneToMany(() => StudentSkill, (skill) => skill.students, { nullable: true })
+  skills: Skill[];
 
   @CreateDateColumn()
   created_date: Date;
