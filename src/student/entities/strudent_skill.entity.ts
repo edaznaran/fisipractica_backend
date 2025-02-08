@@ -16,11 +16,11 @@ export class StudentSkill {
 
   @ManyToOne(() => Student, (student) => student.skills)
   @JoinColumn({ name: 'student_id' })
-  students: Student[];
+  student: Student;
 
   @ManyToOne(() => Skill, (skill) => skill.students)
   @JoinColumn({ name: 'skill_id' })
-  skills: Skill[];
+  skill: Skill;
 
   @CreateDateColumn()
   create_date: Date;

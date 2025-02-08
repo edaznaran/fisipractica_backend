@@ -17,7 +17,7 @@ export class Skill {
   @Column()
   name: string;
 
-  @OneToMany(() => StudentSkill, (student) => student.skills)
+  @OneToMany(() => StudentSkill, (student) => student.skill)
   students: Student[];
 
   @CreateDateColumn()
