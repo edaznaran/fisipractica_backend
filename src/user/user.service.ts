@@ -12,6 +12,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserProfile } from './entities/user_profile.entity';
+import { Role } from './enums/role.enum';
 
 @Injectable()
 export class UserService {
@@ -135,8 +136,8 @@ export class UserService {
     }
   }
 
-  async findByEmail(email: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { email } });
+  async findByEmail(email: string, role: Role): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { email, role } });
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
     }

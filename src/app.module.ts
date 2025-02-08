@@ -18,6 +18,7 @@ import { StudentModule } from './student/student.module';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { UserProfile } from './user/entities/user_profile.entity';
+import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
   imports: [
@@ -53,6 +54,10 @@ import { UserProfile } from './user/entities/user_profile.entity';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

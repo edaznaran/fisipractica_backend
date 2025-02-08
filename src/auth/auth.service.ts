@@ -30,7 +30,10 @@ export class AuthService {
 
   async logIn(logInDto: LogInDto): Promise<any> {
     try {
-      const user = await this.userService.findByEmail(logInDto.email);
+      const user = await this.userService.findByEmail(
+        logInDto.email,
+        logInDto.role,
+      );
       if (!user || !user.password) {
         throw new UnauthorizedException('Credenciales inválidas.');
       }
