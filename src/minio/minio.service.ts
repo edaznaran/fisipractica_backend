@@ -34,7 +34,7 @@ export class MinioService {
     objectName: string,
     buffer: Buffer,
     tag: string,
-  ): Promise<any> {
+  ): Promise<string> {
     try {
       // Valida si el bucket existe, sino lo crea
       const bucketExists = await this.minioClient.bucketExists(bucket);
@@ -64,7 +64,7 @@ export class MinioService {
       }
 
       // Detecta el tipo de archivo y configura el Content-Type
-      let contentType;
+      let contentType: string;
       const fileExtension = objectName.toLowerCase();
       if (fileExtension.endsWith('.jpg')) {
         contentType = 'image/jpg';
@@ -138,7 +138,7 @@ export class MinioService {
       const chunks: Uint8Array[] = [];
 
       return await new Promise<Buffer>((resolve, reject) => {
-        stream.on('data', (chunk) => {
+        stream.on('data', (chunk: Uint8Array) => {
           chunks.push(chunk);
         });
 
