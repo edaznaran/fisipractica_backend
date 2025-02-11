@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Skill } from './skill.entity';
-import { StudentSkill } from './strudent_skill.entity';
+import { StudentSkill } from './student_skill.entity';
 
 @Entity()
 export class Student {

@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { StudentSkill } from './strudent_skill.entity';
+import { StudentSkill } from './student_skill.entity';
 import { Student } from './student.entity';
 
 @Entity()

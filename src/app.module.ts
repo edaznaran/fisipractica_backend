@@ -15,7 +15,7 @@ import { Company } from './company/entities/company.entity';
 import { Recruiter } from './recruiter/entities/recruiter.entity';
 import { RecruiterModule } from './recruiter/recruiter.module';
 import { Skill } from './student/entities/skill.entity';
-import { StudentSkill } from './student/entities/strudent_skill.entity';
+import { StudentSkill } from './student/entities/student_skill.entity';
 import { Student } from './student/entities/student.entity';
 import { StudentModule } from './student/student.module';
 import { User } from './user/entities/user.entity';
