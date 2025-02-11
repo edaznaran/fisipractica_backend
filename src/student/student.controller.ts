@@ -7,14 +7,14 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { StudentService } from './student.service';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiBearerAuth('JWT-auth')
 @Controller('student')
@@ -22,14 +22,21 @@ export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('cv'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'photo', maxCount: 1 },
+      { name: 'cv', maxCount: 1 },
+    ]),
+  )
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Crear estudiante' })
   create(
     @Body() createStudentDto: CreateStudentDto,
-    @UploadedFile() cv: Express.Multer.File,
+    @UploadedFiles()
+    files: { photo: Express.Multer.File[]; cv: Express.Multer.File[] },
   ) {
-    return this.studentService.create(createStudentDto, cv);
+    console.log('cv:', files);
+    return this.studentService.create(createStudentDto, files.photo, files.cv);
   }
 
   @Get()

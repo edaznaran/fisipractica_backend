@@ -35,6 +35,9 @@ export class UserProfile {
   @Column()
   location: string;
 
+  @Column({ type: 'bytea', nullable: true })
+  photo: Uint8Array;
+
   @CreateDateColumn()
   create_date: Date;
 

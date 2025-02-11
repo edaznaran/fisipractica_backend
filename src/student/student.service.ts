@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { MinioService } from 'src/minio/minio.service';
 import { User } from 'src/user/entities/user.entity';
 import { UserProfile } from 'src/user/entities/user_profile.entity';
@@ -14,9 +15,8 @@ import { DataSource, Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { Skill } from './entities/skill.entity';
-import { StudentSkill } from './entities/student_skill.entity';
 import { Student } from './entities/student.entity';
-import * as bcrypt from 'bcrypt';
+import { StudentSkill } from './entities/student_skill.entity';
 
 @Injectable()
 export class StudentService {
@@ -27,7 +27,11 @@ export class StudentService {
     private readonly minioService: MinioService,
   ) {}
 
-  async create(createStudentDto: CreateStudentDto, cv: Express.Multer.File) {
+  async create(
+    createStudentDto: CreateStudentDto,
+    photo: Express.Multer.File[],
+    cv: Express.Multer.File[],
+  ) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -60,6 +64,7 @@ export class StudentService {
         email: createStudentDto.email,
         phone: createStudentDto.phone,
         location: createStudentDto.location,
+        photo: photo ? photo[0].buffer : undefined,
       });
       const savedUserProfile = await queryRunner.manager.save(userProfile);
       // Crea un nuevo estudiante
@@ -76,13 +81,13 @@ export class StudentService {
 
       // Sube el archivo al servidor Minio
       if (cv) {
-        const fileBuffer = Buffer.isBuffer(cv.buffer)
-          ? cv.buffer
-          : Buffer.from(cv.buffer);
+        const fileBuffer = Buffer.isBuffer(cv[0].buffer)
+          ? cv[0].buffer
+          : Buffer.from(cv[0].buffer);
 
         const url = await this.minioService.uploadFile(
           'student-files',
-          cv.originalname,
+          cv[0].originalname,
           fileBuffer,
           'pdf',
         );
@@ -125,7 +130,7 @@ export class StudentService {
         throw error;
       }
       throw new InternalServerErrorException(
-        'Error interno al cr<<ear estudiante.',
+        'Error interno al crear estudiante.',
       );
     } finally {
       await queryRunner.release();

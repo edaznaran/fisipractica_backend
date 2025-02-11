@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsArray,
   IsBooleanString,
   IsDateString,
   IsNotEmpty,
@@ -68,6 +67,9 @@ export class CreateStudentDto {
   @ApiProperty({ type: 'array', items: { type: 'string' } })
   @IsString()
   skills: string;
+
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  photo: Express.Multer.File;
 
   @ApiProperty({ type: 'string', format: 'binary', required: false })
   cv: Express.Multer.File;
