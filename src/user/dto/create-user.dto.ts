@@ -29,12 +29,12 @@ export class CreateUserDto {
   last_name: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   phone: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   location: string;
 }

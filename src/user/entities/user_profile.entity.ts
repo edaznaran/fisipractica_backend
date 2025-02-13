@@ -29,10 +29,10 @@ export class UserProfile {
   @Column()
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   location: string;
 
   @Column({ type: 'bytea', nullable: true })

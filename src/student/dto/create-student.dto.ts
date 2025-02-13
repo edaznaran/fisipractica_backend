@@ -41,14 +41,17 @@ export class CreateStudentDto {
   // Student data
   @ApiProperty()
   @IsString()
+  @IsOptional()
   institution: string;
 
   @ApiProperty()
   @IsDateString()
+  @IsOptional()
   education_start_date: Date;
 
   @ApiProperty()
   @IsDateString()
+  @IsOptional()
   education_end_date: Date;
   /* 
   @ApiProperty()
@@ -57,19 +60,24 @@ export class CreateStudentDto {
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
   description: string;
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
   availability: string;
 
   @ApiProperty({ type: 'array', items: { type: 'string' } })
   @IsString()
+  @IsOptional()
   skills: string;
 
   @ApiProperty({ type: 'string', format: 'binary', required: false })
+  @IsOptional()
   photo: Express.Multer.File;
 
   @ApiProperty({ type: 'string', format: 'binary', required: false })
+  @IsOptional()
   cv: Express.Multer.File;
 }

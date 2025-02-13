@@ -24,19 +24,19 @@ export class Student {
   @Column({ nullable: true })
   cv_url: string;
 
-  @Column()
+  @Column({ nullable: true })
   institution: string;
 
-  @Column()
+  @Column({ nullable: true })
   education_start_date: Date;
 
-  @Column()
+  @Column({ nullable: true })
   education_end_date: Date;
 
   @Column({ default: true })
   studying: boolean;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   description: string;
 
   @Column({ nullable: true })
