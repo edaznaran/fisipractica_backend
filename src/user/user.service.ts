@@ -36,23 +36,20 @@ export class UserService {
       if (userExists) {
         throw new ConflictException('El usuario ya existe');
       }
-      const saltOrRounds = 10; /* 
-      const password = Array(8)
-        .fill('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz')
-        .map((x: string) => x[Math.floor(Math.random() * x.length)])
-        .join(''); */
+
+      const saltOrRounds = 10;
       const hashedpassword = await bcrypt.hash(
         createUserDto.password,
         saltOrRounds,
       );
-      createUserDto.password = hashedpassword;
       const user = queryRunner.manager.create(User, {
         email: createUserDto.email,
-        password: createUserDto.password,
+        password: hashedpassword,
         role: createUserDto.role,
       });
       const response = await queryRunner.manager.save(user);
-      const profile = queryRunner.manager.create(User, {
+
+      const profile = queryRunner.manager.create(UserProfile, {
         first_name: createUserDto.first_name,
         last_name: createUserDto.last_name,
         email: createUserDto.email,
@@ -61,6 +58,7 @@ export class UserService {
         user: user,
       });
       await queryRunner.manager.save(profile);
+
       return {
         id: response.id,
         email: response.email,
