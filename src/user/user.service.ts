@@ -148,7 +148,33 @@ export class UserService {
       if (!user) {
         throw new NotFoundException('Usuario no encontrado');
       }
-      await this.userRepository.update({ id: user.id }, updateUserDto);
+
+      if (updateUserDto.password) 
+      {
+        const saltOrRounds = 10;
+        const hashedpassword = await bcrypt.hash(
+          updateUserDto.password,
+          saltOrRounds,
+        );
+        updateUserDto.password = hashedpassword;
+      }
+
+      const newUserProfileDto = {
+        first_name: updateUserDto.first_name,
+        last_name: updateUserDto.last_name,
+        email: updateUserDto.email,
+        phone: updateUserDto.phone,
+        location: updateUserDto.location,
+      }
+
+      const newUserDto = {
+        email: updateUserDto.email,
+        password: updateUserDto.password,
+        role: updateUserDto.role,
+      }
+
+      await this.userProfileRepository.update( { user: user }, newUserProfileDto);
+      await this.userRepository.update({ id: user.id }, newUserDto);
       return {
         ...user,
         ...updateUserDto,
@@ -170,6 +196,7 @@ export class UserService {
       if (!user) {
         throw new NotFoundException('Usuario no encontrado');
       }
+      await this.userProfileRepository.delete({ user: user });
       await this.userRepository.delete({ id: user.id });
       return {
         message: 'User eliminado con éxito',
