@@ -74,7 +74,6 @@ export class StudentService {
         institution: createStudentDto.institution,
         education_start_date: createStudentDto.education_start_date,
         education_end_date: createStudentDto.education_end_date,
-        studying: createStudentDto.studying,
         description: createStudentDto.description,
         availability: createStudentDto.availability,
       });

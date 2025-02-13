@@ -33,7 +33,7 @@ export class Student {
   @Column()
   education_end_date: Date;
 
-  @Column()
+  @Column({ default: true })
   studying: boolean;
 
   @Column({ type: 'text' })
