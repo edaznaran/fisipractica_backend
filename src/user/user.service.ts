@@ -58,7 +58,7 @@ export class UserService {
         user: user,
       });
       await queryRunner.manager.save(profile);
-
+      await queryRunner.commitTransaction();
       return {
         id: response.id,
         email: response.email,
