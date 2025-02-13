@@ -23,6 +23,7 @@ import { UserProfile } from './user/entities/user_profile.entity';
 import { UserModule } from './user/user.module';
 import { JobModule } from './job/job.module';
 import { Job } from './job/entities/job.entity';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { Job } from './job/entities/job.entity';
     RecruiterModule,
     StudentModule,
     JobModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [
