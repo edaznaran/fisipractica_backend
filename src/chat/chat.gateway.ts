@@ -1,3 +1,5 @@
+import { HttpService } from '@nestjs/axios';
+import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -5,10 +7,13 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { catchError, firstValueFrom } from 'rxjs';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway()
 export class ChatGateway {
+  constructor(private readonly httpService: HttpService) {}
+
   @WebSocketServer()
   server: Server;
   socketMap = new Map<string, { user_id: number }>();
@@ -42,6 +47,61 @@ export class ChatGateway {
     console.log(client.handshake.query.from, client.handshake.query.to);
     console.log(`Mensaje: ${data}.`);
     this.server.to(sockets).emit('message', data);
+    return 'Hello world!';
+  }
+
+  @SubscribeMessage('bot')
+  async handleChatBot(
+    @MessageBody() data: string,
+    @ConnectedSocket() client: Socket,
+  ): Promise<string> {
+    const response = await firstValueFrom(
+      this.httpService
+        .post(
+          'https://openrouter.ai/api/v1/chat/completions',
+          {
+            model: 'deepseek/deepseek-chat:free',
+            messages: [
+              {
+                role: 'user',
+                content: data,
+              },
+              {
+                role: 'assistant',
+                content:
+                  'Eres un asistente virtual útil que solo responde a preguntas relacionadas con Interbank',
+              },
+            ],
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            },
+          },
+        )
+        .pipe(
+          catchError((error) => {
+            console.error('Error:', error.message);
+            if (error instanceof HttpException) {
+              throw error;
+            }
+            throw new InternalServerErrorException(
+              `Error interno al enviar mensaje: ${error.message}`,
+            );
+          }),
+        ),
+    );
+    console.log('Notificación:', data);
+
+    console.log(response.data.choices);
+    const sockets = Array.from(this.socketMap.entries())
+      .filter(
+        ([, value]) => value.user_id === +(client.handshake.query.from ?? 0),
+      )
+      .map(([key]) => key);
+    this.server
+      .to(sockets)
+      .emit('message', response.data.choices?.[0]?.message?.content);
     return 'Hello world!';
   }
 }
