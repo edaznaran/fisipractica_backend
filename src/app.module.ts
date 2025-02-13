@@ -21,6 +21,8 @@ import { StudentModule } from './student/student.module';
 import { User } from './user/entities/user.entity';
 import { UserProfile } from './user/entities/user_profile.entity';
 import { UserModule } from './user/user.module';
+import { JobModule } from './job/job.module';
+import { Job } from './job/entities/job.entity';
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { UserModule } from './user/user.module';
         ActiveToken,
         BlacklistedToken,
         Log,
+        Job,
       ],
       synchronize: true,
     }),
@@ -51,6 +54,7 @@ import { UserModule } from './user/user.module';
     CompanyModule,
     RecruiterModule,
     StudentModule,
+    JobModule,
   ],
   controllers: [AppController],
   providers: [
