@@ -64,14 +64,16 @@ export class ChatGateway {
             messages: [
               {
                 role: 'user',
-                content: data,
+                content: `${data}`,
               },
               {
                 role: 'assistant',
                 content:
-                  `Eres un asistente virtual útil que solo responde a preguntas relacionadas con la empresa ${String(client.handshake.query.to)}.\n` +
-                  `Si te preguntan por otro tema, simplemente responde que solo puedes responder preguntas relacionadas con ${String(client.handshake.query.to)}.\n` +
-                  `También responde de forma precisa y honesta, siempre utilizando un lenguaje educado`,
+                  `Eres un asistente virtual útil especializado en la empresa ${String(client.handshake.query.to)}.\n` +
+                  `Si te preguntan sobre otro tema, simplemente responde que solo puedes responder preguntas relacionadas con ${String(client.handshake.query.to)}.\n` +
+                  `Si no sabes la respuesta a una pregunta, por favor responde con 'En este caso, no puedo ofrecerte información precisa'.\n` +
+                  `No inventes respuestas. Si no sabes la respuesta, por favor dilo. Siempre usa un lenguaje educado y profesional.` +
+                  `Responde estrictamente en español con precisión y honestidad.`,
               },
             ],
           },
@@ -88,7 +90,7 @@ export class ChatGateway {
               throw error;
             }
             throw new InternalServerErrorException(
-              `Error interno al enviar mensaje: ${error.message}`,
+              `Error interno al enviar el mensaje: ${error.message}`,
             );
           }),
         ),
