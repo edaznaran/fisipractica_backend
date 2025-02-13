@@ -94,31 +94,33 @@ export class StudentService {
       }
       const savedStudent = await queryRunner.manager.save(student);
       // Busca skills
-      const Skills = new Array<Skill>();
-      const skillsArray = createStudentDto.skills
-        .split(',')
-        .map((skill) => skill.trim());
-      for (const skill of skillsArray) {
-        const foundedSkill = await queryRunner.manager.findOne(Skill, {
-          where: { name: skill },
-        });
-        let studentSkill: StudentSkill;
-        if (foundedSkill) {
-          Skills.push(foundedSkill);
-          studentSkill = queryRunner.manager.create(StudentSkill, {
-            student: savedStudent,
-            skill: foundedSkill,
+      if (createStudentDto.skills) {
+        const Skills = new Array<Skill>();
+        const skillsArray = createStudentDto.skills
+          .split(',')
+          .map((skill) => skill.trim());
+        for (const skill of skillsArray) {
+          const foundedSkill = await queryRunner.manager.findOne(Skill, {
+            where: { name: skill },
           });
-        } else {
-          const newSkill = queryRunner.manager.create(Skill, { name: skill });
-          const savedSkill = await queryRunner.manager.save(newSkill);
-          Skills.push(savedSkill);
-          studentSkill = queryRunner.manager.create(StudentSkill, {
-            student: savedStudent,
-            skill: savedSkill,
-          });
+          let studentSkill: StudentSkill;
+          if (foundedSkill) {
+            Skills.push(foundedSkill);
+            studentSkill = queryRunner.manager.create(StudentSkill, {
+              student: savedStudent,
+              skill: foundedSkill,
+            });
+          } else {
+            const newSkill = queryRunner.manager.create(Skill, { name: skill });
+            const savedSkill = await queryRunner.manager.save(newSkill);
+            Skills.push(savedSkill);
+            studentSkill = queryRunner.manager.create(StudentSkill, {
+              student: savedStudent,
+              skill: savedSkill,
+            });
+          }
+          await queryRunner.manager.save(studentSkill);
         }
-        await queryRunner.manager.save(studentSkill);
       }
       await queryRunner.commitTransaction();
       return savedStudent;
