@@ -68,8 +68,10 @@ export class ChatGateway {
               },
               {
                 role: 'assistant',
-                content: `Eres un asistente virtual útil que solo responde a preguntas
-                relacionadas con la empresa ${String(client.handshake.query.to)}.`,
+                content:
+                  `Eres un asistente virtual útil que solo responde a preguntas relacionadas con la empresa ${String(client.handshake.query.to)}.\n` +
+                  `Si te preguntan por otro tema, simplemente responde que solo puedes responder preguntas relacionadas con ${String(client.handshake.query.to)}.\n` +
+                  `También responde de forma precisa y honesta, siempre utilizando un lenguaje educado`,
               },
             ],
           },
