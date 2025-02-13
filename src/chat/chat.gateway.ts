@@ -68,8 +68,8 @@ export class ChatGateway {
               },
               {
                 role: 'assistant',
-                content:
-                  'Eres un asistente virtual útil que solo responde a preguntas relacionadas con Interbank',
+                content: `Eres un asistente virtual útil que solo responde a preguntas
+                relacionadas con la empresa ${String(client.handshake.query.to)}.`,
               },
             ],
           },
