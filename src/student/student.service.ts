@@ -235,6 +235,8 @@ export class StudentService {
       }
       queryRunner.manager.merge(Student, student, studentDto);
       await queryRunner.manager.save(student);
+      await queryRunner.commitTransaction();
+      return student;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       console.error(error);
