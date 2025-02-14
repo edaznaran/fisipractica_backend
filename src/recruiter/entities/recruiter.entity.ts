@@ -30,7 +30,7 @@ export class Recruiter {
   @Column()
   position_start_date: Date;
 
-  @Column()
+  @Column({ default: true })
   active: boolean;
 
   @CreateDateColumn()
