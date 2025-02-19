@@ -49,7 +49,7 @@ export class RecruiterService {
       const user = queryRunner.manager.create(User, {
         email: createRecruiterDto.email,
         password: createRecruiterDto.password,
-        role: Role.STUDENT,
+        role: Role.RECRUITER,
       });
       const savedUser = await queryRunner.manager.save(user);
 
