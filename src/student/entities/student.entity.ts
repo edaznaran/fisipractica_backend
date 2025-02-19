@@ -17,7 +17,7 @@ export class Student {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => UserProfile, (user) => user.student)
+  @OneToOne(() => UserProfile, (user) => user.student, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   userProfile: UserProfile;
 
@@ -42,7 +42,7 @@ export class Student {
   @Column({ nullable: true })
   availability: string;
 
-  @OneToMany(() => StudentSkill, (skill) => skill.student, { nullable: true })
+  @OneToMany(() => StudentSkill, (skill) => skill.student, { nullable: true, cascade: true })
   skills: Skill[];
 
   @CreateDateColumn()

@@ -14,7 +14,7 @@ export class StudentSkill {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Student, (student) => student.skills)
+  @ManyToOne(() => Student, (student) => student.skills, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'student_id' })
   student: Student;
 

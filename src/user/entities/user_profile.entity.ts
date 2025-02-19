@@ -18,7 +18,7 @@ export class UserProfile {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User, (user) => user.profile)
+  @OneToOne(() => User, (user) => user.profile, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
@@ -31,7 +31,7 @@ export class UserProfile {
   @Column()
   email: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true }) 
   phone: string;
 
   @Column({ nullable: true })
@@ -46,12 +46,12 @@ export class UserProfile {
   @UpdateDateColumn()
   update_date: Date;
 
-  @OneToOne(() => Student, (student) => student.userProfile)
+  @OneToOne(() => Student, (student) => student.userProfile, { cascade: true, onDelete: 'CASCADE' })
   student: Student;
 
-  @OneToOne(() => Recruiter, (recruiter) => recruiter.userProfile)
+  @OneToOne(() => Recruiter, (recruiter) => recruiter.userProfile, { cascade: true, onDelete: 'CASCADE' })
   recruiter: Recruiter;
-
+ 
   @OneToMany(() => Job, (job) => job.userProfile)
   jobs: Job[];
 }
