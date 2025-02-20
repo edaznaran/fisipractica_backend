@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -10,6 +11,7 @@ import {
 import { User } from './user.entity';
 import { Student } from 'src/student/entities/student.entity';
 import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
+import { Job } from 'src/job/entities/job.entity';
 
 @Entity()
 export class UserProfile {
@@ -49,4 +51,7 @@ export class UserProfile {
 
   @OneToOne(() => Recruiter, (recruiter) => recruiter.userProfile)
   recruiter: Recruiter;
+
+  @OneToMany(() => Job, (job) => job.userProfile)
+  jobs: Job[];
 }
