@@ -48,7 +48,7 @@ export class CompanyService {
     try {
       const company = await this.companyRepository.findOne({
         where: { id },
-        relations: ['recruiters'],
+        relations: ['recruiters', 'jobs'],
       });
       if (!company) {
         throw new NotFoundException('Empresa no encontrada');
@@ -84,7 +84,7 @@ export class CompanyService {
     try {
       const company = await this.companyRepository.findOne({
         where: { id },
-        relations: ['recruiters'],
+        relations: ['recruiters', 'jobs'],
       });
       if (!company) {
         throw new NotFoundException('Empresa no encontrada');
@@ -92,6 +92,11 @@ export class CompanyService {
       if (company.recruiters.length) {
         throw new ConflictException(
           'No se puede eliminar una empresa con reclutadores asociados',
+        );
+      }
+      if (company.jobs.length) {
+        throw new ConflictException(
+          'No se puede eliminar una empresa con trabajos asociados',
         );
       }
       return await this.companyRepository.remove(company);
