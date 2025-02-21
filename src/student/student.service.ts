@@ -188,6 +188,7 @@ export class StudentService {
       }
       const userProfile = await queryRunner.manager.findOne(UserProfile, {
         where: { id: student.userProfile.id },
+        relations: ['user'],
       });
       if (!userProfile) {
         throw new NotFoundException('Perfil de usuario no encontrado');
@@ -253,6 +254,7 @@ export class StudentService {
 
   async remove(id: number) {
     try {
+      //Eliminar estudiantes y sus habilidades
       const student = await this.studentRepository.findOneBy({ id });
       if (!student) {
         throw new NotFoundException('Estudiante no encontrado');
