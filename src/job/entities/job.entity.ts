@@ -1,3 +1,4 @@
+import { Application } from 'src/application/entities/application.entity';
 import { Company } from 'src/company/entities/company.entity';
 import { UserProfile } from 'src/user/entities/user_profile.entity';
 import {
@@ -8,6 +9,7 @@ import {
   JoinColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -48,4 +50,6 @@ export class Job {
   @JoinColumn({ name: 'user_creator_id' })
   userProfile: UserProfile;
 
+  @OneToMany(() => Application, (application) => application.job)
+  applications: Application[];
 }
