@@ -12,6 +12,7 @@ import { User } from './user.entity';
 import { Student } from 'src/student/entities/student.entity';
 import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
 import { Job } from 'src/job/entities/job.entity';
+import { Application } from 'src/application/entities/application.entity';
 
 @Entity()
 export class UserProfile {
@@ -51,6 +52,9 @@ export class UserProfile {
 
   @OneToOne(() => Recruiter, (recruiter) => recruiter.userProfile, { cascade: true, onDelete: 'CASCADE' })
   recruiter: Recruiter;
+
+  @OneToMany(() => Application  , (application) => application.userProfile)
+  applications: Application[];
  
   @OneToMany(() => Job, (job) => job.userProfile)
   jobs: Job[];
