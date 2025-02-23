@@ -33,11 +33,12 @@ export class RecruiterService {
     await queryRunner.startTransaction();
     try {
       const userExists = await queryRunner.manager.findOne(User, {
-        where: { email: createRecruiterDto.email, role: Role.STUDENT },
+        where: { email: createRecruiterDto.email, role: Role.RECRUITER },
       });
       if (userExists) {
         throw new ConflictException('El usuario ya existe');
       }
+      console.log('createStudentDto:', createRecruiterDto);
 
       // Crea un nuevo usuario reclutador
       const saltOrRounds = 10;
@@ -73,7 +74,6 @@ export class RecruiterService {
         throw new NotFoundException('Empresa no encontrada');
       }
       const recruiter = queryRunner.manager.create(Recruiter, {
-        user: savedUser,
         userProfile: savedUserProfile,
         company: company,
         description: createRecruiterDto.description,
