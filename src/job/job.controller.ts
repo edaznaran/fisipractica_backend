@@ -1,8 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { JobService } from './job.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { JobService } from './job.service';
 
 @ApiBearerAuth('JWT-auth')
 @Controller('job')

@@ -10,11 +10,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { CreateRecruiterDto } from './dto/create-recruiter.dto';
 import { UpdateRecruiterDto } from './dto/update-recruiter.dto';
 import { RecruiterService } from './recruiter.service';
 
+@ApiBearerAuth('JWT-auth')
 @Controller('recruiter')
 export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}

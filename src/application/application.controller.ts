@@ -1,8 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { ApplicationService } from './application.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { UpdateApplicationDto } from './dto/update-application.dto';
 
+@ApiBearerAuth('JWT-auth')
 @Controller('application')
 export class ApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}
@@ -23,7 +33,10 @@ export class ApplicationController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateApplicationDto: UpdateApplicationDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateApplicationDto: UpdateApplicationDto,
+  ) {
     return this.applicationService.update(+id, updateApplicationDto);
   }
 
