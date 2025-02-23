@@ -42,7 +42,10 @@ export class Student {
   @Column({ nullable: true })
   availability: string;
 
-  @OneToMany(() => StudentSkill, (skill) => skill.student, { nullable: true, cascade: true })
+  @OneToMany(() => StudentSkill, (skill) => skill.student, {
+    nullable: true,
+    cascade: true,
+  })
   skills: Skill[];
 
   @CreateDateColumn()
