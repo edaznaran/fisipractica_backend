@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDateString,
   IsNotEmpty,
-  IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -41,7 +41,7 @@ export class CreateRecruiterDto {
 
   // Recruiter data
   @ApiProperty()
-  @IsNumber()
+  @IsNumberString()
   @IsOptional()
   company_id: number;
 
@@ -54,4 +54,8 @@ export class CreateRecruiterDto {
   @IsDateString()
   @IsOptional()
   position_start_date: Date;
+
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  @IsOptional()
+  photo: Express.Multer.File;
 }

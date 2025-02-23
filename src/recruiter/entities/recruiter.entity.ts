@@ -7,13 +7,13 @@ import {
   JoinColumn,
   ManyToOne,
   OneToOne,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
 export class Recruiter {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => Company, (company) => company.recruiters)
