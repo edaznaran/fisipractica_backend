@@ -20,7 +20,7 @@ export class Recruiter {
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @OneToOne(() => UserProfile, (user) => user.recruiter)
+  @OneToOne(() => UserProfile, (user) => user.recruiter, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   userProfile: UserProfile;
 

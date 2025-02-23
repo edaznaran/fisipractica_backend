@@ -24,6 +24,8 @@ import { UserModule } from './user/user.module';
 import { JobModule } from './job/job.module';
 import { Job } from './job/entities/job.entity';
 import { ChatModule } from './chat/chat.module';
+import { ApplicationModule } from './application/application.module';
+import { Application } from './application/entities/application.entity';
 
 @Module({
   imports: [
@@ -47,6 +49,7 @@ import { ChatModule } from './chat/chat.module';
         BlacklistedToken,
         Log,
         Job,
+        Application
       ],
       synchronize: true,
     }),
@@ -57,6 +60,7 @@ import { ChatModule } from './chat/chat.module';
     StudentModule,
     JobModule,
     ChatModule,
+    ApplicationModule,
   ],
   controllers: [AppController],
   providers: [
