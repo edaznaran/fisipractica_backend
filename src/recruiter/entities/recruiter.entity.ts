@@ -1,3 +1,4 @@
+import { Chat } from 'src/chat/entities/chat.entity';
 import { Company } from 'src/company/entities/company.entity';
 import { UserProfile } from 'src/user/entities/user_profile.entity';
 import {
@@ -6,6 +7,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -40,4 +42,7 @@ export class Recruiter {
 
   @UpdateDateColumn()
   updated_date: Date;
+
+  @OneToMany(() => Chat, (chat) => chat.recruiter)
+  chats: Chat[];
 }
