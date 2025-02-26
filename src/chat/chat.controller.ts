@@ -6,10 +6,12 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
+import { FilterChatDto } from './dto/filter-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 
 @ApiBearerAuth('JWT-auth')
@@ -27,9 +29,9 @@ export class ChatController {
     return this.chatService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.chatService.findOne(+id);
+  @Get()
+  findOne(@Query() filter: FilterChatDto) {
+    return this.chatService.findOne(filter);
   }
 
   @Patch(':id')
