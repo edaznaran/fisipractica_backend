@@ -7,7 +7,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { StudentSkill } from './student_skill.entity';
-import { Student } from './student.entity';
 
 @Entity()
 export class Skill {
@@ -17,8 +16,10 @@ export class Skill {
   @Column()
   name: string;
 
-  @OneToMany(() => StudentSkill, (student) => student.skill)
-  students: Student[];
+  @OneToMany(() => StudentSkill, (student) => student.skill, {
+    onDelete: 'CASCADE',
+  })
+  students: StudentSkill[];
 
   @CreateDateColumn()
   create_date: Date;

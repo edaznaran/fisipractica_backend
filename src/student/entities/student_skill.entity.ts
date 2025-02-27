@@ -14,11 +14,15 @@ export class StudentSkill {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Student, (student) => student.skills, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Student, (student) => student.skills, {
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'student_id' })
   student: Student;
 
-  @ManyToOne(() => Skill, (skill) => skill.students)
+  @ManyToOne(() => Skill, (skill) => skill.students, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'skill_id' })
   skill: Skill;
 

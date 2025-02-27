@@ -10,7 +10,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Skill } from './skill.entity';
 import { StudentSkill } from './student_skill.entity';
 
 @Entity()
@@ -18,7 +17,10 @@ export class Student {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => UserProfile, (user) => user.student, { onDelete: 'CASCADE' })
+  @OneToOne(() => UserProfile, (user) => user.student, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   userProfile: UserProfile;
 
@@ -47,13 +49,13 @@ export class Student {
     nullable: true,
     cascade: true,
   })
-  skills: Skill[];
+  skills: StudentSkill[];
 
   @CreateDateColumn()
-  created_date: Date;
+  create_date: Date;
 
   @UpdateDateColumn()
-  updated_date: Date;
+  update_date: Date;
 
   @OneToMany(() => Chat, (chat) => chat.student)
   chats: Chat[];

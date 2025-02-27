@@ -1,3 +1,7 @@
+import { Application } from 'src/application/entities/application.entity';
+import { Job } from 'src/job/entities/job.entity';
+import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
+import { Student } from 'src/student/entities/student.entity';
 import {
   Column,
   CreateDateColumn,
@@ -9,10 +13,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-import { Student } from 'src/student/entities/student.entity';
-import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
-import { Job } from 'src/job/entities/job.entity';
-import { Application } from 'src/application/entities/application.entity';
 
 @Entity()
 export class UserProfile {
@@ -32,7 +32,7 @@ export class UserProfile {
   @Column()
   email: string;
 
-  @Column({ nullable: true }) 
+  @Column({ nullable: true })
   phone: string;
 
   @Column({ nullable: true })
@@ -47,15 +47,19 @@ export class UserProfile {
   @UpdateDateColumn()
   update_date: Date;
 
-  @OneToOne(() => Student, (student) => student.userProfile, { cascade: true, onDelete: 'CASCADE' })
+  @OneToOne(() => Student, (student) => student.userProfile, {
+    onDelete: 'CASCADE',
+  })
   student: Student;
 
-  @OneToOne(() => Recruiter, (recruiter) => recruiter.userProfile, { cascade: true, onDelete: 'CASCADE' })
+  @OneToOne(() => Recruiter, (recruiter) => recruiter.userProfile, {
+    cascade: true,
+  })
   recruiter: Recruiter;
 
-  @OneToMany(() => Application  , (application) => application.userProfile)
+  @OneToMany(() => Application, (application) => application.userProfile)
   applications: Application[];
- 
+
   @OneToMany(() => Job, (job) => job.userProfile)
   jobs: Job[];
 }
