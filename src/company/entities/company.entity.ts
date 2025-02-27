@@ -30,10 +30,10 @@ export class Company {
   location: string;
 
   @CreateDateColumn()
-  created_date: Date;
+  create_date: Date;
 
   @UpdateDateColumn()
-  updated_date: Date;
+  update_date: Date;
 
   @OneToMany(() => Recruiter, (recruiter) => recruiter.company)
   recruiters: Recruiter[];

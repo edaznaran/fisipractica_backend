@@ -65,8 +65,8 @@ export class UserService {
         role: response.role,
         active: response.active,
         profile: profile,
-        created_date: response.create_date,
-        updated_date: response.update_date,
+        create_date: response.create_date,
+        update_date: response.update_date,
       };
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -90,8 +90,8 @@ export class UserService {
           role: user.role,
           active: user.active,
           profile: user.profile,
-          created_date: user.create_date,
-          updated_date: user.update_date,
+          create_date: user.create_date,
+          update_date: user.update_date,
         };
       });
 
@@ -122,8 +122,8 @@ export class UserService {
         role: user.role,
         active: user.active,
         profile: user.profile,
-        created_date: user.create_date,
-        updated_date: user.update_date,
+        create_date: user.create_date,
+        update_date: user.update_date,
       };
     } catch (error) {
       console.error(error);
@@ -149,8 +149,7 @@ export class UserService {
         throw new NotFoundException('Usuario no encontrado');
       }
 
-      if (updateUserDto.password) 
-      {
+      if (updateUserDto.password) {
         const saltOrRounds = 10;
         const hashedpassword = await bcrypt.hash(
           updateUserDto.password,
@@ -165,15 +164,18 @@ export class UserService {
         email: updateUserDto.email,
         phone: updateUserDto.phone,
         location: updateUserDto.location,
-      }
+      };
 
       const newUserDto = {
         email: updateUserDto.email,
         password: updateUserDto.password,
         role: updateUserDto.role,
-      }
+      };
 
-      await this.userProfileRepository.update( { user: user }, newUserProfileDto);
+      await this.userProfileRepository.update(
+        { user: user },
+        newUserProfileDto,
+      );
       await this.userRepository.update({ id: user.id }, newUserDto);
       return {
         ...user,

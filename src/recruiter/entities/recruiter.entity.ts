@@ -38,10 +38,10 @@ export class Recruiter {
   active: boolean;
 
   @CreateDateColumn()
-  created_date: Date;
+  create_date: Date;
 
   @UpdateDateColumn()
-  updated_date: Date;
+  update_date: Date;
 
   @OneToMany(() => Chat, (chat) => chat.recruiter)
   chats: Chat[];

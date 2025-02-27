@@ -32,8 +32,8 @@ export class Application {
   status: ApplicationStatus;
 
   @CreateDateColumn()
-  created_date: Date;
+  create_date: Date;
 
   @UpdateDateColumn()
-  updated_date: Date;
+  update_date: Date;
 }

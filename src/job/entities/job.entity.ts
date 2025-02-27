@@ -14,14 +14,13 @@ import {
 
 @Entity()
 export class Job {
-
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   title: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   location: string;
 
   @Column()
@@ -30,7 +29,7 @@ export class Job {
   @Column()
   salary: string;
 
-  @Column({default: true})
+  @Column({ default: true })
   hiring: boolean;
 
   @Column()
