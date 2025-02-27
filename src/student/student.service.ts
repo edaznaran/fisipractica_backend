@@ -140,7 +140,9 @@ export class StudentService {
 
   async findAll() {
     try {
-      return await this.studentRepository.find({ relations: ['userProfile'] });
+      return await this.studentRepository.find({
+        relations: ['userProfile', 'skills'],
+      });
     } catch (error) {
       console.error(error);
       if (error instanceof HttpException) {
@@ -156,7 +158,7 @@ export class StudentService {
     try {
       const student = await this.studentRepository.findOne({
         where: { id },
-        relations: ['userProfile'],
+        relations: ['userProfile', 'skills'],
       });
       if (!student) {
         throw new NotFoundException('Estudiante no encontrado');
@@ -217,25 +219,44 @@ export class StudentService {
         description: updateStudentDto.description,
         availability: updateStudentDto.availability,
       };
+      queryRunner.manager.merge(Student, student, studentDto);
+      const savedStudent = await queryRunner.manager.save(student);
       // Busca skills
-      const Skills = new Array<Skill>();
-      if (updateStudentDto.skills && updateStudentDto.skills.length > 0) {
-        for (const skill of updateStudentDto.skills) {
+      if (updateStudentDto.skills) {
+        const Skills = new Array<Skill>();
+        const skillsArray = updateStudentDto.skills
+          .split(',')
+          .map((skill) => skill.trim());
+        for (const skill of skillsArray) {
           const foundedSkill = await queryRunner.manager.findOne(Skill, {
             where: { name: skill },
           });
+          let studentSkill: StudentSkill;
           if (foundedSkill) {
+            const relationExists = await queryRunner.manager.findOne(
+              StudentSkill,
+              { where: { student: savedStudent, skill: foundedSkill } },
+            );
+            if (relationExists) {
+              continue;
+            }
             Skills.push(foundedSkill);
+            studentSkill = queryRunner.manager.create(StudentSkill, {
+              student: savedStudent,
+              skill: foundedSkill,
+            });
           } else {
             const newSkill = queryRunner.manager.create(Skill, { name: skill });
             const savedSkill = await queryRunner.manager.save(newSkill);
             Skills.push(savedSkill);
+            studentSkill = queryRunner.manager.create(StudentSkill, {
+              student: savedStudent,
+              skill: savedSkill,
+            });
           }
+          await queryRunner.manager.save(studentSkill);
         }
-        student.skills = Skills;
       }
-      queryRunner.manager.merge(Student, student, studentDto);
-      await queryRunner.manager.save(student);
       await queryRunner.commitTransaction();
       return student;
     } catch (error) {
@@ -252,15 +273,29 @@ export class StudentService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<{ message: string }> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
       //Eliminar estudiantes y sus habilidades
-      const student = await this.studentRepository.findOneBy({ id });
+      const student = await queryRunner.manager.findOne(Student, {
+        where: { id },
+        relations: ['skills', 'userProfile', 'userProfile.user'],
+      });
       if (!student) {
         throw new NotFoundException('Estudiante no encontrado');
       }
-      return await this.studentRepository.remove(student);
+      await queryRunner.manager.delete(StudentSkill, student.skills);
+      await queryRunner.manager.delete(User, student.userProfile.user);
+      await queryRunner.manager.delete(UserProfile, student.userProfile);
+      await queryRunner.manager.delete(Student, student);
+      await queryRunner.commitTransaction();
+      return {
+        message: 'Estudiante eliminado correctamente',
+      };
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       console.error(error);
       if (error instanceof HttpException) {
         throw error;
@@ -268,6 +303,8 @@ export class StudentService {
       throw new InternalServerErrorException(
         'Error interno al eliminar estudiante.',
       );
+    } finally {
+      await queryRunner.release();
     }
   }
 }
