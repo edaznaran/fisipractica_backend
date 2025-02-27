@@ -82,11 +82,11 @@ export class AuthService {
     }
   }
 
-  async logOut(logOutDto: LogOutDto): Promise<any> {
+  async logOut(logOutDto: LogOutDto, token: string): Promise<any> {
     try {
       // Busca el token activo
       const activeToken = await this.activeTokenRepository.findOne({
-        where: { email: logOutDto.email, token: logOutDto.access_token },
+        where: { email: logOutDto.email, token },
       });
       if (!activeToken) {
         throw new UnauthorizedException('Sesión no encontrada.');

@@ -6,9 +6,9 @@ export class LogOutDto {
   @IsNotEmpty()
   @ApiProperty()
   email: string;
-
+  /* 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  access_token: string;
+  access_token: string; */
 }

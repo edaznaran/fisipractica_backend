@@ -6,9 +6,11 @@ import {
   HttpStatus,
   Post,
   Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
+import { ExtractJwt } from 'passport-jwt';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { LogInDto } from './dto/log-in.dto';
@@ -36,7 +38,11 @@ export class AuthController {
 
   @Post('logout')
   @ApiOperation({ summary: 'Cerrar sesión' })
-  logOut(@Body() logOutDto: LogOutDto) {
-    return this.authService.logOut(logOutDto);
+  logOut(@Body() logOutDto: LogOutDto, @Req() req: Request) {
+    const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+    if (!token) {
+      throw new UnauthorizedException('Token no encontrado.');
+    }
+    return this.authService.logOut(logOutDto, token);
   }
 }
