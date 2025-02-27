@@ -220,7 +220,8 @@ export class StudentService {
       // Busca skills
       const Skills = new Array<Skill>();
       if (updateStudentDto.skills && updateStudentDto.skills.length > 0) {
-        for (const skill of updateStudentDto.skills) {
+        const skills = updateStudentDto.skills.split(',').map((skill) => skill.trim());
+        for (const skill of skills) {
           const foundedSkill = await queryRunner.manager.findOne(Skill, {
             where: { name: skill },
           });
