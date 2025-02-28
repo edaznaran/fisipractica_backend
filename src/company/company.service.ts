@@ -18,9 +18,17 @@ export class CompanyService {
     private readonly companyRepository: Repository<Company>,
   ) {}
 
-  async create(createCompanyDto: CreateCompanyDto) {
+  async create(createCompanyDto: CreateCompanyDto, photo: Express.Multer.File) {
     try {
-      const company = this.companyRepository.create(createCompanyDto);
+      const company = this.companyRepository.create({
+        name: createCompanyDto.name,
+        address: createCompanyDto.address,
+        description: createCompanyDto.description,
+        website: createCompanyDto.website,
+        location: createCompanyDto.location,
+        color: createCompanyDto.color,
+        photo: photo ? photo.buffer : undefined,
+      });
       return await this.companyRepository.save(company);
     } catch (error) {
       console.error(error);
