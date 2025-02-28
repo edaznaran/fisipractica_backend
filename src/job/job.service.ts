@@ -57,7 +57,9 @@ export class JobService {
 
   async findAll() {
     try{
-      const jobs = await this.jobRepository.find();
+      const jobs = await this.jobRepository.find({
+        relations: ['company', 'userProfile'],
+      });
       return jobs;
     } catch (error) {
       console.error(error);
