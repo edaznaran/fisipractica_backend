@@ -41,11 +41,11 @@ export class Job {
   @UpdateDateColumn()
   update_date: Date;
 
-  @ManyToOne(() => Company, (company) => company.jobs)
+  @ManyToOne(() => Company, (company) => company.jobs, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => UserProfile, (userProfile) => userProfile.jobs)
+  @ManyToOne(() => UserProfile, (userProfile) => userProfile.jobs, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_creator_id' })
   userProfile: UserProfile;
 
