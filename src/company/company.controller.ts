@@ -6,11 +6,14 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiBearerAuth('JWT-auth')
 @Controller('company')
@@ -18,9 +21,14 @@ export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Post()
+  @UseInterceptors(FileInterceptor('photo'))
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Crear empresa' })
-  create(@Body() createCompanyDto: CreateCompanyDto) {
-    return this.companyService.create(createCompanyDto);
+  create(
+    @Body() createCompanyDto: CreateCompanyDto,
+    @UploadedFile() photo: Express.Multer.File,
+  ) {
+    return this.companyService.create(createCompanyDto, photo);
   }
 
   @Get()
