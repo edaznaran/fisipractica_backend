@@ -9,7 +9,7 @@ export class CreateCompanyDto {
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   address: string;
 
   @ApiProperty()
@@ -24,6 +24,15 @@ export class CreateCompanyDto {
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   location: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  color: string;
+
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  @IsOptional()
+  photo: Express.Multer.File;
 }

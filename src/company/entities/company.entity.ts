@@ -29,6 +29,12 @@ export class Company {
   @Column()
   location: string;
 
+  @Column({ nullable: true })
+  color: string;
+
+  @Column({ type: 'bytea', nullable: true })
+  photo: Uint8Array;
+
   @CreateDateColumn()
   create_date: Date;
 
