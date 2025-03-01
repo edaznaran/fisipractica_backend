@@ -175,7 +175,11 @@ export class StudentService {
     }
   }
 
-  async update(id: number, updateStudentDto: UpdateStudentDto) {
+  async update(
+    id: number,
+    updateStudentDto: UpdateStudentDto,
+    photo: Express.Multer.File,
+  ) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -207,6 +211,7 @@ export class StudentService {
         email: updateStudentDto.email,
         phone: updateStudentDto.phone,
         location: updateStudentDto.location,
+        photo: photo ? photo.buffer : userProfile.photo,
       };
       queryRunner.manager.merge(UserProfile, userProfile, userProfileDto);
       await queryRunner.manager.save(userProfile);

@@ -1,19 +1,18 @@
 import {
-  ConflictException,
   HttpException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Job } from 'src/job/entities/job.entity';
+import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
+import { Student } from 'src/student/entities/student.entity';
 import { Repository } from 'typeorm';
 import { CreateChatDto } from './dto/create-chat.dto';
+import { FilterChatDto } from './dto/filter-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { Chat } from './entities/chat.entity';
-import { Job } from 'src/job/entities/job.entity';
-import { FilterChatDto } from './dto/filter-chat.dto';
-import { Student } from 'src/student/entities/student.entity';
-import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
 
 @Injectable()
 export class ChatService {
@@ -93,11 +92,13 @@ export class ChatService {
 
   async findOne(filter: FilterChatDto): Promise<Chat> {
     try {
+      console.log(filter);
       const chat = await this.chatRepository.findOne({
         where: {
           id: filter.id,
           student: { id: filter.student_id },
           recruiter: { id: filter.recruiter_id },
+          job_id: filter.job_id,
         },
         relations: ['student', 'recruiter'],
       });
