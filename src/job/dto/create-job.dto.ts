@@ -36,6 +36,16 @@ export class CreateJobDto {
   url_job_pdf: string;
 
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  job_requirements: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  job_functions: string;
+
+  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
   company_id: number;
