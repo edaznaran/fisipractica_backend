@@ -49,7 +49,6 @@ export class ChatGateway {
       const { from, to, chat_id, job_id } = client.handshake.query;
       console.log(from, to);
 
-      console.log(from, to);
       console.log(`Mensaje: ${data}.`);
 
       let newChatId = '';
@@ -70,6 +69,7 @@ export class ChatGateway {
           recruiter_id: +(to ?? 0),
           job_id: +(job_id ?? 0),
         });
+        console.log(chat);
         newChatId = String(chat.id);
         await this.messageService.create({
           chat_id: chat.id,
@@ -81,13 +81,14 @@ export class ChatGateway {
         const fromSockets = Array.from(this.socketMap.entries())
           .filter(([, value]) => value.user_id === +(from ?? 0))
           .map(([key]) => key);
-
+        console.log('Emitiendo a', fromSockets);
         this.server.to(fromSockets).emit('student-message', newChatId);
+      } else {
+        const sockets = Array.from(this.socketMap.entries())
+          .filter(([, value]) => value.user_id === +(to ?? 0))
+          .map(([key]) => key);
+        this.server.to(sockets).emit('recruiter-message', data);
       }
-      const sockets = Array.from(this.socketMap.entries())
-        .filter(([, value]) => value.user_id === +(to ?? 0))
-        .map(([key]) => key);
-      this.server.to(sockets).emit('recruiter-message', data);
 
       return 'Hello world!';
     } catch (error) {
@@ -110,7 +111,6 @@ export class ChatGateway {
       const { from, to, chat_id, job_id } = client.handshake.query;
       console.log(from, to);
 
-      console.log(from, to);
       console.log(`Mensaje: ${data}.`);
 
       let newChatId = '';
@@ -143,11 +143,12 @@ export class ChatGateway {
           .filter(([, value]) => value.user_id === +(from ?? 0))
           .map(([key]) => key);
         this.server.to(fromSockets).emit('recruiter-message', newChatId);
+      } else {
+        const toSockets = Array.from(this.socketMap.entries())
+          .filter(([, value]) => value.user_id === +(to ?? 0))
+          .map(([key]) => key);
+        this.server.to(toSockets).emit('student-message', data);
       }
-      const toSockets = Array.from(this.socketMap.entries())
-        .filter(([, value]) => value.user_id === +(to ?? 0))
-        .map(([key]) => key);
-      this.server.to(toSockets).emit('student-message', data);
 
       return 'Hello world!';
     } catch (error) {
@@ -161,7 +162,7 @@ export class ChatGateway {
     }
   }
 
-  @SubscribeMessage('bot')
+  @SubscribeMessage('message')
   async handleChatBot(
     @MessageBody() data: string,
     @ConnectedSocket() client: Socket,
@@ -173,6 +174,7 @@ export class ChatGateway {
       const chat = await this.chatService.findOne({
         id: +(chat_id ?? 0),
         student_id: +(from ?? 0),
+        recruiter_id: undefined,
         job_id: +(job_id ?? 0),
       });
       await this.messageService.create({
@@ -191,60 +193,64 @@ export class ChatGateway {
       });
     }
 
-    const response = await firstValueFrom(
-      this.httpService
-        .post(
-          'https://openrouter.ai/api/v1/chat/completions',
-          {
-            model: 'deepseek/deepseek-chat:free',
-            messages: [
-              {
-                role: 'user',
-                content: `${data}`,
-              },
-              {
-                role: 'assistant',
-                content:
-                  `Eres un asistente virtual útil especializado en la empresa ${String(to)}.\n` +
-                  `Si te preguntan sobre otro tema, simplemente responde que solo puedes responder preguntas relacionadas con ${String(to)}.\n` +
-                  `Si no sabes la respuesta a una pregunta, por favor responde con 'En este caso, no puedo ofrecerte información precisa'.\n` +
-                  `No inventes respuestas. Si no sabes la respuesta, por favor dilo. Siempre usa un lenguaje educado y profesional.` +
-                  `Responde estrictamente en español con precisión y honestidad.`,
-              },
-            ],
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-            },
-          },
-        )
-        .pipe(
-          catchError((error) => {
-            console.error('Error:', error.message);
-            if (error instanceof HttpException) {
-              throw error;
-            }
-            throw new InternalServerErrorException(
-              `Error interno al enviar el mensaje: ${error.message}`,
-            );
-          }),
-        ),
-    );
-    console.log('Notificación:', data);
+    const url = 'https://openrouter.ai/api/v1/chat/completions';
+    const body = {
+      model: 'deepseek/deepseek-chat:free',
+      messages: [
+        {
+          role: 'user',
+          content: `${data}`,
+        },
+        {
+          role: 'assistant',
+          content:
+            `Eres un asistente virtual útil especializado en la empresa ${String(to)}.\n` +
+            `Si te preguntan sobre otro tema, simplemente responde que solo puedes responder preguntas relacionadas con ${String(to)}.\n` +
+            `Si no sabes la respuesta a una pregunta, por favor responde con 'En este caso, no puedo ofrecerte información precisa'.\n` +
+            `No inventes respuestas. Si no sabes la respuesta, por favor dilo. Siempre usa un lenguaje educado y profesional.` +
+            `Responde estrictamente en español con precisión y honestidad.`,
+        },
+      ],
+    };
 
-    await this.messageService.create({
-      chat_id: +(newChatId ?? 0),
-      message: response?.data?.choices?.[0]?.message?.content,
-    });
-
-    console.log(response.data.choices);
     const sockets = Array.from(this.socketMap.entries())
       .filter(([, value]) => value.user_id === +(from ?? 0))
       .map(([key]) => key);
-    this.server
-      .to(sockets)
-      .emit('message', response.data.choices?.[0]?.message?.content);
+
+    if (newChatId) {
+      this.server.to(sockets).emit('message', newChatId);
+    } else {
+      const response = await firstValueFrom(
+        this.httpService
+          .post(url, body, {
+            headers: {
+              Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            },
+          })
+          .pipe(
+            catchError((error) => {
+              console.error('Error:', error.message);
+              if (error instanceof HttpException) {
+                throw error;
+              }
+              throw new InternalServerErrorException(
+                `Error interno al enviar el mensaje: ${error.message}`,
+              );
+            }),
+          ),
+      );
+      console.log('Notificación:', data);
+
+      await this.messageService.create({
+        chat_id: +(chat_id ?? 0),
+        message: response?.data?.choices?.[0]?.message?.content,
+      });
+      console.log(response.data.choices);
+
+      this.server
+        .to(sockets)
+        .emit('message', response.data.choices?.[0]?.message?.content);
+    }
     return 'Hello world!';
   }
 }
