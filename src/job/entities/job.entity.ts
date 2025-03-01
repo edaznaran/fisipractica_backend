@@ -35,6 +35,12 @@ export class Job {
   @Column()
   url_job_pdf: string;
 
+  @Column({ nullable: true })
+  job_requirements: string;
+
+  @Column({ nullable: true })
+  job_functions: string
+
   @CreateDateColumn()
   create_date: Date;
 
