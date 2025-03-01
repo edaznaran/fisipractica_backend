@@ -8,6 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from 'src/job/entities/job.entity';
 import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
 import { Student } from 'src/student/entities/student.entity';
+import { User } from 'src/user/entities/user.entity';
+import { Role } from 'src/user/enums/role.enum';
 import { Repository } from 'typeorm';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { FilterChatDto } from './dto/filter-chat.dto';
@@ -25,35 +27,51 @@ export class ChatService {
     private readonly studentRepository: Repository<Student>,
     @InjectRepository(Recruiter)
     private readonly recruiterRepository: Repository<Recruiter>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async create(createChatDto: CreateChatDto): Promise<Chat> {
     try {
-      const [chatExists, student, recruiter, job] = await Promise.all([
-        this.chatRepository.findOne({
-          where: {
-            student: { id: createChatDto.student_id },
-            recruiter: { id: createChatDto.recruiter_id },
-          },
-        }),
-        this.studentRepository.findOneBy({ id: createChatDto.student_id }),
-        this.recruiterRepository.findOneBy({ id: createChatDto.recruiter_id }),
-        this.jobRepository.findOneBy({ id: createChatDto.job_id }),
-      ]);
+      const chatExists = await this.chatRepository.findOne({
+        where: {
+          student: { id: createChatDto.student_id },
+          recruiter: { id: createChatDto.recruiter_id },
+        },
+      });
 
       if (chatExists) {
         return chatExists;
       }
+
+      const student = await this.userRepository.findOneBy({
+        id: createChatDto.student_id,
+      });
+
       if (!student) {
         throw new NotFoundException(
           `Estudiante con id ${createChatDto.student_id} no encontrado`,
         );
       }
-      if (!recruiter) {
-        throw new NotFoundException(
-          `Reclutador con id ${createChatDto.recruiter_id} no encontrado`,
-        );
+      let recruiter: User | undefined;
+      if (createChatDto.recruiter_id) {
+        const recruiterResult = await this.userRepository.findOneBy({
+          id: createChatDto.recruiter_id,
+          role: Role.RECRUITER,
+        });
+        recruiter = recruiterResult !== null ? recruiterResult : undefined;
+
+        if (!recruiter) {
+          throw new NotFoundException(
+            `Reclutador con id ${createChatDto.recruiter_id} no encontrado`,
+          );
+        }
       }
+
+      const job = await this.jobRepository.findOneBy({
+        id: createChatDto.job_id,
+      });
+
       if (!job) {
         throw new NotFoundException(
           `Trabajo con id ${createChatDto.job_id} no encontrado`,

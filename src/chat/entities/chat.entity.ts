@@ -1,6 +1,5 @@
 import { Message } from 'src/message/entities/message.entity';
-import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
-import { Student } from 'src/student/entities/student.entity';
+import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   Entity,
@@ -15,13 +14,15 @@ export class Chat {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Student, (student) => student.chats)
+  @ManyToOne(() => User, (student) => student.student_chats, { nullable: true })
   @JoinColumn({ name: 'student_id' })
-  student: Student;
+  student: User;
 
-  @ManyToOne(() => Recruiter, (recruiter) => recruiter.chats)
+  @ManyToOne(() => User, (recruiter) => recruiter.recruiter_chats, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'recruiter_id' })
-  recruiter: Recruiter;
+  recruiter: User;
 
   @Column()
   job_id: number;

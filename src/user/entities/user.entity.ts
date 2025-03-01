@@ -1,7 +1,9 @@
+import { Chat } from 'src/chat/entities/chat.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -37,4 +39,10 @@ export class User {
     onDelete: 'CASCADE',
   })
   profile: UserProfile;
+
+  @OneToMany(() => Chat, (chat) => chat.student)
+  student_chats: Chat[];
+
+  @OneToMany(() => Chat, (chat) => chat.recruiter)
+  recruiter_chats: Chat[];
 }
