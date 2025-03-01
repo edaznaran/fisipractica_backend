@@ -62,6 +62,7 @@ export class ChatGateway {
         await this.messageService.create({
           chat_id: chat.id,
           message: data,
+          user_id: +(from ?? 0),
         });
       } catch {
         const chat = await this.chatService.create({
@@ -71,10 +72,6 @@ export class ChatGateway {
         });
         console.log(chat);
         newChatId = String(chat.id);
-        await this.messageService.create({
-          chat_id: chat.id,
-          message: data,
-        });
       }
 
       if (newChatId) {
@@ -124,6 +121,7 @@ export class ChatGateway {
         await this.messageService.create({
           chat_id: chat.id,
           message: data,
+          user_id: +(from ?? 0),
         });
       } catch {
         const chat = await this.chatService.create({
@@ -132,10 +130,6 @@ export class ChatGateway {
           job_id: +(job_id ?? 0),
         });
         newChatId = String(chat.id);
-        await this.messageService.create({
-          chat_id: chat.id,
-          message: data,
-        });
       }
 
       if (newChatId) {
@@ -180,6 +174,7 @@ export class ChatGateway {
       await this.messageService.create({
         chat_id: chat.id,
         message: data,
+        user_id: +(from ?? 0),
       });
     } catch {
       const chat = await this.chatService.create({
@@ -187,10 +182,6 @@ export class ChatGateway {
         job_id: +(job_id ?? 0),
       });
       newChatId = String(chat.id);
-      await this.messageService.create({
-        chat_id: chat.id,
-        message: data,
-      });
     }
 
     const url = 'https://openrouter.ai/api/v1/chat/completions';
@@ -244,6 +235,7 @@ export class ChatGateway {
       await this.messageService.create({
         chat_id: +(chat_id ?? 0),
         message: response?.data?.choices?.[0]?.message?.content,
+        user_id: undefined,
       });
       console.log(response.data.choices);
 

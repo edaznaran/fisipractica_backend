@@ -20,6 +20,9 @@ export class Message {
   @Column()
   message: string;
 
+  @Column({ nullable: true })
+  user_id?: number;
+
   @CreateDateColumn()
   create_date: Date;
 }

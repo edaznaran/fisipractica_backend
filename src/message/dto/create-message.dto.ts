@@ -6,4 +6,7 @@ export class CreateMessageDto {
 
   @ApiProperty()
   message: string;
+
+  @ApiProperty({ required: false })
+  user_id?: number;
 }
