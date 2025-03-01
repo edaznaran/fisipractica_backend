@@ -7,10 +7,14 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -54,12 +58,15 @@ export class StudentController {
   }
 
   @Patch(':id')
+  @UseInterceptors(FileInterceptor('photo'))
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Actualizar estudiante por ID' })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateStudentDto: UpdateStudentDto,
+    @UploadedFile() photo: Express.Multer.File,
   ) {
-    return this.studentService.update(+id, updateStudentDto);
+    return this.studentService.update(+id, updateStudentDto, photo);
   }
 
   @Delete(':id')
