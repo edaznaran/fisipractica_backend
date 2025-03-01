@@ -113,11 +113,12 @@ export class RecruiterService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(userId: number) {
     try {
+      console.log('userId:', userId);
       const recruiter = await this.recruiterRepository.findOne({
-        where: { id },
-        relations: ['userProfile', 'company'],
+        where: { userProfile: { user: { id: userId } } },
+        relations: ['userProfile', 'userProfile.user', 'company'],
       });
       if (!recruiter) {
         throw new NotFoundException('Reclutador no encontrado');
