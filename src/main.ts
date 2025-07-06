@@ -33,7 +33,7 @@ async function bootstrap() {
     swaggerOptions: {
       persistAuthorization: true,
     },
-    customSwaggerUiPath: './node_modules/swagger-ui-dist',
+    customSwaggerUiPath: 'node_modules/swagger-ui-dist',
   });
 
   await app.listen(process.env.PORT ?? 3000);
