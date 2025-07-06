@@ -5,11 +5,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
   JoinColumn,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -39,7 +39,7 @@ export class Job {
   job_requirements: string;
 
   @Column({ nullable: true })
-  job_functions: string
+  job_functions: string;
 
   @CreateDateColumn()
   create_date: Date;
@@ -51,7 +51,9 @@ export class Job {
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => UserProfile, (userProfile) => userProfile.jobs, { onDelete: 'CASCADE' })
+  @ManyToOne(() => UserProfile, (userProfile) => userProfile.jobs, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_creator_id' })
   userProfile: UserProfile;
 
