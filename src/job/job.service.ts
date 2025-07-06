@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   HttpException,
   Injectable,
   InternalServerErrorException,
@@ -7,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import { Company } from '../company/entities/company.entity';
+import { UserProfile } from '../user/entities/user_profile.entity';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { Job } from './entities/job.entity';
-import { Company } from 'src/company/entities/company.entity';
-import { UserProfile } from 'src/user/entities/user_profile.entity';
 
 @Injectable()
 export class JobService {
@@ -19,13 +18,13 @@ export class JobService {
     @InjectRepository(Job)
     private readonly jobRepository: Repository<Job>,
     private readonly dataSource: DataSource,
-  ){};
+  ) {}
 
   async create(createJobDto: CreateJobDto) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    try{
+    try {
       const { company_id, user_creator_id, ...jobData } = createJobDto;
       const company = await queryRunner.manager.findOne(Company, {
         where: { id: company_id },
@@ -56,7 +55,7 @@ export class JobService {
   }
 
   async findAll() {
-    try{
+    try {
       const jobs = await this.jobRepository.find({
         relations: ['company', 'userProfile'],
       });
@@ -71,7 +70,7 @@ export class JobService {
   }
 
   async findOne(id: number) {
-    try{
+    try {
       const job = await this.jobRepository.findOne({
         where: { id },
         relations: ['company', 'userProfile'],
@@ -93,7 +92,7 @@ export class JobService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    try{
+    try {
       const { company_id, user_creator_id, ...jobData } = updateJobDto;
       const job = await this.jobRepository.findOne({
         where: { id },
@@ -129,7 +128,7 @@ export class JobService {
   }
 
   async remove(id: number) {
-    try{
+    try {
       const job = await this.jobRepository.findOne({
         where: { id },
         relations: ['company', 'userProfile'],
@@ -138,8 +137,7 @@ export class JobService {
         throw new NotFoundException(`Trabajo con id ${id} no encontrado`);
       }
       return await this.jobRepository.remove(job);
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       if (error instanceof HttpException) {
         throw error;

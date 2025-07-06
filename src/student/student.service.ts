@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { MinioService } from 'src/minio/minio.service';
-import { User } from 'src/user/entities/user.entity';
-import { UserProfile } from 'src/user/entities/user_profile.entity';
-import { Role } from 'src/user/enums/role.enum';
+import { MinioService } from '../minio/minio.service';
+import { User } from '../user/entities/user.entity';
+import { UserProfile } from '../user/entities/user_profile.entity';
+import { Role } from '../user/enums/role.enum';
 import { DataSource, Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';

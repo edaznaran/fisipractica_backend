@@ -1,7 +1,7 @@
-import { Application } from 'src/application/entities/application.entity';
-import { Job } from 'src/job/entities/job.entity';
-import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
-import { Student } from 'src/student/entities/student.entity';
+import { Application } from '../../application/entities/application.entity';
+import { Job } from '../../job/entities/job.entity';
+import { Recruiter } from '../../recruiter/entities/recruiter.entity';
+import { Student } from '../../student/entities/student.entity';
 import {
   Column,
   CreateDateColumn,

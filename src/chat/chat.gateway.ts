@@ -9,7 +9,7 @@ import {
 } from '@nestjs/websockets';
 import { catchError, firstValueFrom } from 'rxjs';
 import { Server, Socket } from 'socket.io';
-import { MessageService } from 'src/message/message.service';
+import { MessageService } from '../message/message.service';
 import { ChatService } from './chat.service';
 
 @WebSocketGateway()

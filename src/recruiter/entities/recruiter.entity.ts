@@ -1,6 +1,6 @@
-import { Chat } from 'src/chat/entities/chat.entity';
-import { Company } from 'src/company/entities/company.entity';
-import { UserProfile } from 'src/user/entities/user_profile.entity';
+import { Chat } from '../../chat/entities/chat.entity';
+import { Company } from '../../company/entities/company.entity';
+import { UserProfile } from '../../user/entities/user_profile.entity';
 import {
   Column,
   CreateDateColumn,

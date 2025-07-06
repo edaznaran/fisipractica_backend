@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { Company } from 'src/company/entities/company.entity';
-import { User } from 'src/user/entities/user.entity';
-import { UserProfile } from 'src/user/entities/user_profile.entity';
-import { Role } from 'src/user/enums/role.enum';
+import { Company } from '../company/entities/company.entity';
+import { User } from '../user/entities/user.entity';
+import { UserProfile } from '../user/entities/user_profile.entity';
+import { Role } from '../user/enums/role.enum';
 import { DataSource, Repository } from 'typeorm';
 import { CreateRecruiterDto } from './dto/create-recruiter.dto';
 import { UpdateRecruiterDto } from './dto/update-recruiter.dto';

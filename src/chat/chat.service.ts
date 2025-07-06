@@ -5,11 +5,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Job } from 'src/job/entities/job.entity';
-import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
-import { Student } from 'src/student/entities/student.entity';
-import { User } from 'src/user/entities/user.entity';
-import { Role } from 'src/user/enums/role.enum';
+import { Job } from '../job/entities/job.entity';
+import { Recruiter } from '../recruiter/entities/recruiter.entity';
+import { Student } from '../student/entities/student.entity';
+import { User } from '../user/entities/user.entity';
+import { Role } from '../user/enums/role.enum';
 import { Repository } from 'typeorm';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { FilterChatDto } from './dto/filter-chat.dto';

@@ -1,5 +1,5 @@
-import { Recruiter } from 'src/recruiter/entities/recruiter.entity';
-import { Job } from 'src/job/entities/job.entity';
+import { Recruiter } from '../../recruiter/entities/recruiter.entity';
+import { Job } from '../../job/entities/job.entity';
 import {
   Column,
   CreateDateColumn,
