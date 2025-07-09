@@ -5,12 +5,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Job } from '../job/entities/job.entity';
 import { Recruiter } from '../recruiter/entities/recruiter.entity';
 import { Student } from '../student/entities/student.entity';
 import { User } from '../user/entities/user.entity';
-import { Role } from '../user/enums/role.enum';
-import { Repository } from 'typeorm';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { FilterChatDto } from './dto/filter-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -44,23 +43,20 @@ export class ChatService {
         return chatExists;
       }
 
-      const student = await this.userRepository.findOneBy({
+      const student = await this.studentRepository.findOneBy({
         id: createChatDto.student_id,
       });
-
       if (!student) {
         throw new NotFoundException(
           `Estudiante con id ${createChatDto.student_id} no encontrado`,
         );
       }
-      let recruiter: User | undefined;
-      if (createChatDto.recruiter_id) {
-        const recruiterResult = await this.userRepository.findOneBy({
-          id: createChatDto.recruiter_id,
-          role: Role.RECRUITER,
-        });
-        recruiter = recruiterResult !== null ? recruiterResult : undefined;
 
+      let recruiter: Recruiter | null = null;
+      if (createChatDto.recruiter_id) {
+        recruiter = await this.recruiterRepository.findOneBy({
+          id: createChatDto.recruiter_id,
+        });
         if (!recruiter) {
           throw new NotFoundException(
             `Reclutador con id ${createChatDto.recruiter_id} no encontrado`,
@@ -81,7 +77,7 @@ export class ChatService {
       const chat = this.chatRepository.create({
         ...createChatDto,
         student,
-        recruiter,
+        recruiter: recruiter ?? undefined,
       });
       return await this.chatRepository.save(chat);
     } catch (error) {
@@ -105,6 +101,32 @@ export class ChatService {
         throw error;
       }
       throw new InternalServerErrorException('Error al listar los chats');
+    }
+  }
+
+  async findByUser(userId: number, type: string): Promise<Chat[]> {
+    try {
+      let chats: Chat[];
+      if (type === 'student') {
+        chats = await this.chatRepository.find({
+          where: { student: { id: userId } },
+          relations: ['student.user', 'recruiter.user'],
+        });
+      } else if (type === 'recruiter') {
+        chats = await this.chatRepository.find({
+          where: { recruiter: { id: userId } },
+          relations: ['student.user', 'recruiter.user'],
+        });
+      } else {
+        throw new HttpException('Tipo de usuario no válido', 400);
+      }
+      return chats;
+    } catch (error) {
+      console.error(error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error al buscar los chats');
     }
   }
 

@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Company } from '../company/entities/company.entity';
-import { UserProfile } from '../user/entities/user_profile.entity';
+import { Recruiter } from '../recruiter/entities/recruiter.entity';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { Job } from './entities/job.entity';
@@ -33,16 +33,16 @@ export class JobService {
         throw new NotFoundException('Company not found');
       }
 
-      const userProfile = await queryRunner.manager.findOne(UserProfile, {
+      const recruiter = await queryRunner.manager.findOne(Recruiter, {
         where: { id: user_creator_id },
       });
-      if (!userProfile) {
-        throw new NotFoundException('User profile not found');
+      if (!recruiter) {
+        throw new NotFoundException('Reclutador no encontrado');
       }
       const job = this.jobRepository.create({
         ...jobData,
         company,
-        userProfile,
+        recruiter,
       });
       return await this.jobRepository.save(job);
     } catch (error) {
@@ -57,7 +57,7 @@ export class JobService {
   async findAll() {
     try {
       const jobs = await this.jobRepository.find({
-        relations: ['company', 'userProfile'],
+        relations: ['company', 'recruiter.user'],
       });
       return jobs;
     } catch (error) {
@@ -73,7 +73,7 @@ export class JobService {
     try {
       const job = await this.jobRepository.findOne({
         where: { id },
-        relations: ['company', 'userProfile'],
+        relations: ['company', 'recruiter'],
       });
       if (!job) {
         throw new NotFoundException(`Trabajo con id ${id} no encontrado`);
@@ -96,7 +96,7 @@ export class JobService {
       const { company_id, user_creator_id, ...jobData } = updateJobDto;
       const job = await this.jobRepository.findOne({
         where: { id },
-        relations: ['company', 'userProfile'],
+        relations: ['company', 'recruiter'],
       });
       if (!job) {
         throw new NotFoundException('Job not found');
@@ -109,14 +109,14 @@ export class JobService {
         throw new NotFoundException('Company not found');
       }
 
-      const userProfile = await queryRunner.manager.findOne(UserProfile, {
+      const recruiter = await queryRunner.manager.findOne(Recruiter, {
         where: { id: user_creator_id },
       });
-      if (!userProfile) {
-        throw new NotFoundException('User profile not found');
+      if (!recruiter) {
+        throw new NotFoundException('Reclutador no encontrado');
       }
 
-      this.jobRepository.merge(job, jobData, { company, userProfile });
+      this.jobRepository.merge(job, jobData, { company, recruiter });
       return await this.jobRepository.save(job);
     } catch (error) {
       console.error(error);
@@ -131,7 +131,7 @@ export class JobService {
     try {
       const job = await this.jobRepository.findOne({
         where: { id },
-        relations: ['company', 'userProfile'],
+        relations: ['company', 'recruiter'],
       });
       if (!job) {
         throw new NotFoundException(`Trabajo con id ${id} no encontrado`);

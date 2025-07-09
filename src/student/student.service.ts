@@ -7,11 +7,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { DataSource, Repository } from 'typeorm';
 import { MinioService } from '../minio/minio.service';
 import { User } from '../user/entities/user.entity';
-import { UserProfile } from '../user/entities/user_profile.entity';
 import { Role } from '../user/enums/role.enum';
-import { DataSource, Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { Skill } from './entities/skill.entity';
@@ -54,23 +53,17 @@ export class StudentService {
         email: createStudentDto.email,
         password: createStudentDto.password,
         role: Role.STUDENT,
-      });
-      const savedUser = await queryRunner.manager.save(user);
-      // Crea datos de usuario
-      const userProfile = queryRunner.manager.create(UserProfile, {
-        user: savedUser,
         first_name: createStudentDto.first_name,
         last_name: createStudentDto.last_name,
-        email: createStudentDto.email,
         phone: createStudentDto.phone,
         location: createStudentDto.location,
         photo: photo ? photo[0].buffer : undefined,
       });
-      const savedUserProfile = await queryRunner.manager.save(userProfile);
+      const savedUser = await queryRunner.manager.save(user);
+
       // Crea un nuevo estudiante
       const student = queryRunner.manager.create(Student, {
         user: savedUser,
-        userProfile: savedUserProfile,
         institution: createStudentDto.institution,
         education_start_date: createStudentDto.education_start_date,
         education_end_date: createStudentDto.education_end_date,
@@ -141,7 +134,7 @@ export class StudentService {
   async findAll() {
     try {
       return await this.studentRepository.find({
-        relations: ['userProfile', 'skills'],
+        relations: ['user', 'skills'],
       });
     } catch (error) {
       console.error(error);
@@ -158,7 +151,7 @@ export class StudentService {
     try {
       const student = await this.studentRepository.findOne({
         where: { id },
-        relations: ['userProfile', 'skills'],
+        relations: ['user', 'skills'],
       });
       if (!student) {
         throw new NotFoundException('Estudiante no encontrado');
@@ -187,34 +180,27 @@ export class StudentService {
       // Actualiza perfil de usuario
       const student = await queryRunner.manager.findOne(Student, {
         where: { id },
-        relations: ['userProfile'],
+        relations: ['user'],
       });
       if (!student) {
         throw new NotFoundException('Estudiante no encontrado');
       }
-      const userProfile = await queryRunner.manager.findOne(UserProfile, {
-        where: { id: student.userProfile.id },
-        relations: ['user'],
-      });
-      if (!userProfile) {
-        throw new NotFoundException('Perfil de usuario no encontrado');
-      }
       const user = await queryRunner.manager.findOne(User, {
-        where: { id: userProfile.user.id },
+        where: { id: student.user.id },
       });
       if (!user) {
         throw new NotFoundException('Usuario no encontrado');
       }
-      const userProfileDto = {
+      const userDto = {
         first_name: updateStudentDto.first_name,
         last_name: updateStudentDto.last_name,
         email: updateStudentDto.email,
         phone: updateStudentDto.phone,
         location: updateStudentDto.location,
-        photo: photo ? photo.buffer : userProfile.photo,
+        photo: photo ? photo.buffer : user.photo,
       };
-      queryRunner.manager.merge(UserProfile, userProfile, userProfileDto);
-      await queryRunner.manager.save(userProfile);
+      queryRunner.manager.merge(User, user, userDto);
+      await queryRunner.manager.save(user);
       // Actualiza datos de estudiante
       const studentDto = {
         institution: updateStudentDto.institution,
@@ -286,14 +272,13 @@ export class StudentService {
       //Eliminar estudiantes y sus habilidades
       const student = await queryRunner.manager.findOne(Student, {
         where: { id },
-        relations: ['skills', 'userProfile', 'userProfile.user'],
+        relations: ['skills', 'user'],
       });
       if (!student) {
         throw new NotFoundException('Estudiante no encontrado');
       }
       await queryRunner.manager.delete(StudentSkill, student.skills);
-      await queryRunner.manager.delete(User, student.userProfile.user);
-      await queryRunner.manager.delete(UserProfile, student.userProfile);
+      await queryRunner.manager.delete(User, student.user);
       await queryRunner.manager.delete(Student, student);
       await queryRunner.commitTransaction();
       return {

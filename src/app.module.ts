@@ -27,7 +27,6 @@ import { Student } from './student/entities/student.entity';
 import { StudentSkill } from './student/entities/student_skill.entity';
 import { StudentModule } from './student/student.module';
 import { User } from './user/entities/user.entity';
-import { UserProfile } from './user/entities/user_profile.entity';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -42,7 +41,6 @@ import { UserModule } from './user/user.module';
       database: process.env.PGDATABASE,
       entities: [
         User,
-        UserProfile,
         Company,
         Recruiter,
         Student,

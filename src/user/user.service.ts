@@ -11,7 +11,6 @@ import { DataSource, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { UserProfile } from './entities/user_profile.entity';
 import { Role } from './enums/role.enum';
 
 @Injectable()
@@ -19,8 +18,6 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(UserProfile)
-    private readonly userProfileRepository: Repository<UserProfile>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -46,25 +43,19 @@ export class UserService {
         email: createUserDto.email,
         password: hashedpassword,
         role: createUserDto.role,
+        first_name: createUserDto.first_name,
+        last_name: createUserDto.last_name,
+        phone: createUserDto.phone,
+        location: createUserDto.location,
       });
       const response = await queryRunner.manager.save(user);
 
-      const profile = queryRunner.manager.create(UserProfile, {
-        first_name: createUserDto.first_name,
-        last_name: createUserDto.last_name,
-        email: createUserDto.email,
-        phone: createUserDto.phone,
-        location: createUserDto.location,
-        user: user,
-      });
-      await queryRunner.manager.save(profile);
       await queryRunner.commitTransaction();
       return {
         id: response.id,
         email: response.email,
         role: response.role,
         active: response.active,
-        profile: profile,
         create_date: response.create_date,
         update_date: response.update_date,
       };
@@ -82,17 +73,12 @@ export class UserService {
 
   async findAll() {
     try {
-      const users = await this.userRepository.find({ relations: ['profile'] });
+      const users = await this.userRepository.find({
+        relations: ['student', 'recruiter'],
+      });
       const response = users.map((user) => {
-        return {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          active: user.active,
-          profile: user.profile,
-          create_date: user.create_date,
-          update_date: user.update_date,
-        };
+        delete user.password; // Elimina la contraseña del objeto de respuesta
+        return user;
       });
 
       return response;
@@ -111,20 +97,13 @@ export class UserService {
     try {
       const user = await this.userRepository.findOne({
         where: { id },
-        relations: ['profile'],
+        relations: ['student', 'recruiter'],
       });
       if (!user) {
         throw new NotFoundException('Usuario no encontrado');
       }
-      return {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        active: user.active,
-        profile: user.profile,
-        create_date: user.create_date,
-        update_date: user.update_date,
-      };
+      delete user.password; // Elimina la contraseña del objeto de respuesta
+      return user;
     } catch (error) {
       console.error(error);
       if (error instanceof HttpException) {
@@ -135,7 +114,16 @@ export class UserService {
   }
 
   async findByEmail(email: string, role: Role): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { email, role } });
+    let relations: string[] = [];
+    if (role === Role.STUDENT) {
+      relations = ['student'];
+    } else if (role === Role.RECRUITER) {
+      relations = ['recruiter'];
+    }
+    const user = await this.userRepository.findOne({
+      where: { email, role },
+      relations: relations,
+    });
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
     }
@@ -158,24 +146,16 @@ export class UserService {
         updateUserDto.password = hashedpassword;
       }
 
-      const newUserProfileDto = {
-        first_name: updateUserDto.first_name,
-        last_name: updateUserDto.last_name,
-        email: updateUserDto.email,
-        phone: updateUserDto.phone,
-        location: updateUserDto.location,
-      };
-
       const newUserDto = {
         email: updateUserDto.email,
         password: updateUserDto.password,
         role: updateUserDto.role,
+        first_name: updateUserDto.first_name,
+        last_name: updateUserDto.last_name,
+        phone: updateUserDto.phone,
+        location: updateUserDto.location,
       };
 
-      await this.userProfileRepository.update(
-        { user: user },
-        newUserProfileDto,
-      );
       await this.userRepository.update({ id: user.id }, newUserDto);
       return {
         ...user,
@@ -198,7 +178,6 @@ export class UserService {
       if (!user) {
         throw new NotFoundException('Usuario no encontrado');
       }
-      await this.userProfileRepository.delete({ user: user });
       await this.userRepository.delete({ id: user.id });
       return {
         message: 'User eliminado con éxito',

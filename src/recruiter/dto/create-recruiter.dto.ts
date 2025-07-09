@@ -19,7 +19,6 @@ export class CreateRecruiterDto {
   @IsNotEmpty()
   password: string;
 
-  // UserProfile data
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

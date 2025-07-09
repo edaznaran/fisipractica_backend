@@ -7,11 +7,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { DataSource, Repository } from 'typeorm';
 import { Company } from '../company/entities/company.entity';
 import { User } from '../user/entities/user.entity';
-import { UserProfile } from '../user/entities/user_profile.entity';
 import { Role } from '../user/enums/role.enum';
-import { DataSource, Repository } from 'typeorm';
 import { CreateRecruiterDto } from './dto/create-recruiter.dto';
 import { UpdateRecruiterDto } from './dto/update-recruiter.dto';
 import { Recruiter } from './entities/recruiter.entity';
@@ -51,21 +50,13 @@ export class RecruiterService {
         email: createRecruiterDto.email,
         password: createRecruiterDto.password,
         role: Role.RECRUITER,
-      });
-      const savedUser = await queryRunner.manager.save(user);
-
-      // Crea datos de usuario
-      const userProfile = queryRunner.manager.create(UserProfile, {
-        user: savedUser,
         first_name: createRecruiterDto.first_name,
         last_name: createRecruiterDto.last_name,
-        email: createRecruiterDto.email,
         phone: createRecruiterDto.phone,
         location: createRecruiterDto.location,
         photo: photo ? photo.buffer : undefined,
       });
-      const savedUserProfile = await queryRunner.manager.save(userProfile);
-
+      const savedUser = await queryRunner.manager.save(user);
       // Crea un nuevo reclutador
       const company = await queryRunner.manager.findOneBy(Company, {
         id: createRecruiterDto.company_id,
@@ -74,7 +65,7 @@ export class RecruiterService {
         throw new NotFoundException('Empresa no encontrada');
       }
       const recruiter = queryRunner.manager.create(Recruiter, {
-        userProfile: savedUserProfile,
+        user: savedUser,
         company: company,
         description: createRecruiterDto.description,
         position_start_date: createRecruiterDto.position_start_date,
@@ -100,7 +91,7 @@ export class RecruiterService {
   async findAll() {
     try {
       return await this.recruiterRepository.find({
-        relations: ['userProfile', 'company'],
+        relations: ['user', 'company'],
       });
     } catch (error) {
       console.error(error);
@@ -117,8 +108,8 @@ export class RecruiterService {
     try {
       console.log('userId:', userId);
       const recruiter = await this.recruiterRepository.findOne({
-        where: { userProfile: { user: { id: userId } } },
-        relations: ['userProfile', 'userProfile.user', 'company'],
+        where: { user: { id: userId } },
+        relations: ['user', 'company'],
       });
       if (!recruiter) {
         throw new NotFoundException('Reclutador no encontrado');
@@ -141,31 +132,25 @@ export class RecruiterService {
       // Actualiza perfil de usuario
       const recruiter = await queryRunner.manager.findOne(Recruiter, {
         where: { id },
-        relations: ['userProfile', 'company'],
+        relations: ['user', 'company'],
       });
       if (!recruiter) {
         throw new NotFoundException('Reclutador no encontrado');
       }
-      const userProfile = await queryRunner.manager.findOne(UserProfile, {
-        where: { id: recruiter.userProfile.id },
-      });
-      if (!userProfile) {
-        throw new NotFoundException('Perfil de usuario no encontrado');
-      }
       const user = await queryRunner.manager.findOne(User, {
-        where: { id: userProfile.user.id },
+        where: { id: recruiter.user.id },
       });
       if (!user) {
         throw new NotFoundException('Usuario no encontrado');
       }
-      Object.assign(userProfile, {
+      Object.assign(user, {
         first_name: updateRecruiterDto.first_name,
         last_name: updateRecruiterDto.last_name,
         email: updateRecruiterDto.email,
         phone: updateRecruiterDto.phone,
         location: updateRecruiterDto.location,
       });
-      await queryRunner.manager.save(userProfile);
+      await queryRunner.manager.save(user);
 
       let company: Company | null = null;
       if (updateRecruiterDto.company_id) {
@@ -201,12 +186,12 @@ export class RecruiterService {
     try {
       const recruiter = await this.recruiterRepository.findOne({
         where: { id },
-        relations: ['userProfile', 'company'],
+        relations: ['user', 'company'],
       });
       if (!recruiter) {
         throw new NotFoundException('Reclutador no encontrado');
       }
-      if (recruiter.userProfile) {
+      if (recruiter.user) {
         throw new ConflictException(
           'No se puede eliminar el reclutador porque tiene un perfil de usuario',
         );
