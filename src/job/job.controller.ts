@@ -29,6 +29,12 @@ export class JobController {
     return this.jobService.findAll();
   }
 
+  @Get('recruiter/:recruiterId')
+  @ApiOperation({ summary: 'Listar trabajos por ID de reclutador' })
+  findByRecruiter(@Param('recruiterId') recruiterId: string) {
+    return this.jobService.findByRecruiter(+recruiterId);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Buscar trabajo por ID' })
   findOne(@Param('id') id: string) {

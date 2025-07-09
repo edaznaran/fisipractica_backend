@@ -69,6 +69,29 @@ export class JobService {
     }
   }
 
+  async findByRecruiter(recruiterId: number) {
+    try {
+      const jobs = await this.jobRepository.find({
+        where: { recruiter: { id: recruiterId } },
+        relations: ['company', 'recruiter'],
+      });
+      if (jobs.length === 0) {
+        throw new NotFoundException(
+          `No se encontraron trabajos para el reclutador con id ${recruiterId}`,
+        );
+      }
+      return jobs;
+    } catch (error) {
+      console.error(error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Error al buscar trabajos por reclutador',
+      );
+    }
+  }
+
   async findOne(id: number) {
     try {
       const job = await this.jobRepository.findOne({
