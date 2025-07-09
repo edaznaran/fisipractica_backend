@@ -1,5 +1,3 @@
-import { Job } from '../../job/entities/job.entity';
-import { UserProfile } from '../../user/entities/user_profile.entity';
 import {
   Column,
   CreateDateColumn,
@@ -9,6 +7,8 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Job } from '../../job/entities/job.entity';
+import { Student } from '../../student/entities/student.entity';
 import { ApplicationStatus } from '../enums/application.enum';
 
 @Entity()
@@ -16,9 +16,9 @@ export class Application {
   @PrimaryColumn()
   id: number;
 
-  @ManyToOne(() => UserProfile, (userProfile) => userProfile.applications)
+  @ManyToOne(() => Student, (student) => student.applications)
   @JoinColumn({ name: 'user_id' })
-  userProfile: UserProfile;
+  student: Student;
 
   @ManyToOne(() => Job, (job) => job.applications)
   @JoinColumn({ name: 'job_id' })

@@ -1,6 +1,3 @@
-import { Application } from '../../application/entities/application.entity';
-import { Company } from '../../company/entities/company.entity';
-import { UserProfile } from '../../user/entities/user_profile.entity';
 import {
   Column,
   CreateDateColumn,
@@ -11,6 +8,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Application } from '../../application/entities/application.entity';
+import { Company } from '../../company/entities/company.entity';
+import { Recruiter } from '../../recruiter/entities/recruiter.entity';
 
 @Entity()
 export class Job {
@@ -51,11 +51,11 @@ export class Job {
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToOne(() => UserProfile, (userProfile) => userProfile.jobs, {
+  @ManyToOne(() => Recruiter, (recruiter) => recruiter.jobs, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'user_creator_id' })
-  userProfile: UserProfile;
+  @JoinColumn({ name: 'recruiter_creator_id' })
+  recruiter: Recruiter;
 
   @OneToMany(() => Application, (application) => application.job)
   applications: Application[];

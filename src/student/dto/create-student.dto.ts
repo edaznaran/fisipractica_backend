@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsBoolean,
   IsDateString,
   IsNotEmpty,
   IsOptional,
@@ -19,7 +18,6 @@ export class CreateStudentDto {
   @IsNotEmpty()
   password: string;
 
-  // UserProfile data
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -55,7 +53,6 @@ export class CreateStudentDto {
   @IsOptional()
   education_end_date: Date;
 
-  
   // @ApiProperty()
   // @IsBoolean()
   // @IsOptional()

@@ -108,6 +108,32 @@ export class ChatService {
     }
   }
 
+  async findByUser(userId: number, type: string): Promise<Chat[]> {
+    try {
+      let chats: Chat[];
+      if (type === 'student') {
+        chats = await this.chatRepository.find({
+          where: { student: { id: userId } },
+          relations: ['student.user', 'recruiter.user'],
+        });
+      } else if (type === 'recruiter') {
+        chats = await this.chatRepository.find({
+          where: { recruiter: { id: userId } },
+          relations: ['student.user', 'recruiter.user'],
+        });
+      } else {
+        throw new HttpException('Tipo de usuario no válido', 400);
+      }
+      return chats;
+    } catch (error) {
+      console.error(error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error al buscar los chats');
+    }
+  }
+
   async findOne(filter: FilterChatDto): Promise<Chat> {
     try {
       console.log(filter);

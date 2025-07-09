@@ -29,6 +29,11 @@ export class ChatController {
     return this.chatService.findAll();
   }
 
+  @Get(':userId')
+  findByUser(@Param('userId') userId: string, @Query('type') type: string) {
+    return this.chatService.findByUser(+userId, type);
+  }
+
   @Get()
   findOne(@Query() filter: FilterChatDto) {
     return this.chatService.findOne(filter);

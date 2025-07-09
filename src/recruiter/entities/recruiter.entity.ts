@@ -1,6 +1,3 @@
-import { Chat } from '../../chat/entities/chat.entity';
-import { Company } from '../../company/entities/company.entity';
-import { UserProfile } from '../../user/entities/user_profile.entity';
 import {
   Column,
   CreateDateColumn,
@@ -12,6 +9,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Chat } from '../../chat/entities/chat.entity';
+import { Company } from '../../company/entities/company.entity';
+import { Job } from '../../job/entities/job.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class Recruiter {
@@ -22,11 +23,11 @@ export class Recruiter {
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @OneToOne(() => UserProfile, (user) => user.recruiter, {
+  @OneToOne(() => User, (user) => user.recruiter, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
-  userProfile: UserProfile;
+  user: User;
 
   @Column()
   description: string;
@@ -45,4 +46,7 @@ export class Recruiter {
 
   @OneToMany(() => Chat, (chat) => chat.recruiter)
   chats: Chat[];
+
+  @OneToMany(() => Job, (job) => job.recruiter)
+  jobs: Job[];
 }

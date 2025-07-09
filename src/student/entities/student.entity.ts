@@ -1,5 +1,3 @@
-import { Chat } from '../../chat/entities/chat.entity';
-import { UserProfile } from '../../user/entities/user_profile.entity';
 import {
   Column,
   CreateDateColumn,
@@ -10,6 +8,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Application } from '../../application/entities/application.entity';
+import { Chat } from '../../chat/entities/chat.entity';
+import { User } from '../../user/entities/user.entity';
 import { StudentSkill } from './student_skill.entity';
 
 @Entity()
@@ -17,12 +18,12 @@ export class Student {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => UserProfile, (user) => user.student, {
+  @OneToOne(() => User, (user) => user.student, {
     cascade: true,
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
-  userProfile: UserProfile;
+  user: User;
 
   @Column({ nullable: true })
   cv_url: string;
@@ -50,6 +51,9 @@ export class Student {
     cascade: true,
   })
   skills: StudentSkill[];
+
+  @OneToMany(() => Application, (application) => application.student)
+  applications: Application[];
 
   @CreateDateColumn()
   create_date: Date;
