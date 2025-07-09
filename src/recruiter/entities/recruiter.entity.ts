@@ -9,7 +9,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Chat } from '../../chat/entities/chat.entity';
 import { Company } from '../../company/entities/company.entity';
 import { Job } from '../../job/entities/job.entity';
 import { User } from '../../user/entities/user.entity';
@@ -43,9 +42,6 @@ export class Recruiter {
 
   @UpdateDateColumn()
   update_date: Date;
-
-  @OneToMany(() => Chat, (chat) => chat.recruiter)
-  chats: Chat[];
 
   @OneToMany(() => Job, (job) => job.recruiter)
   jobs: Job[];

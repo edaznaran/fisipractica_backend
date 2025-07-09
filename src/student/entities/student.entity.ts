@@ -9,7 +9,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Application } from '../../application/entities/application.entity';
-import { Chat } from '../../chat/entities/chat.entity';
 import { User } from '../../user/entities/user.entity';
 import { StudentSkill } from './student_skill.entity';
 
@@ -60,7 +59,4 @@ export class Student {
 
   @UpdateDateColumn()
   update_date: Date;
-
-  @OneToMany(() => Chat, (chat) => chat.student)
-  chats: Chat[];
 }

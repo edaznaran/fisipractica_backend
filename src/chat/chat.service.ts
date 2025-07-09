@@ -10,6 +10,7 @@ import { Job } from '../job/entities/job.entity';
 import { Recruiter } from '../recruiter/entities/recruiter.entity';
 import { Student } from '../student/entities/student.entity';
 import { User } from '../user/entities/user.entity';
+import { Role } from '../user/enums/role.enum';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { FilterChatDto } from './dto/filter-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -43,7 +44,7 @@ export class ChatService {
         return chatExists;
       }
 
-      const student = await this.studentRepository.findOneBy({
+      const student = await this.userRepository.findOneBy({
         id: createChatDto.student_id,
       });
       if (!student) {
@@ -52,9 +53,9 @@ export class ChatService {
         );
       }
 
-      let recruiter: Recruiter | null = null;
+      let recruiter: User | null = null;
       if (createChatDto.recruiter_id) {
-        recruiter = await this.recruiterRepository.findOneBy({
+        recruiter = await this.userRepository.findOneBy({
           id: createChatDto.recruiter_id,
         });
         if (!recruiter) {
@@ -104,18 +105,18 @@ export class ChatService {
     }
   }
 
-  async findByUser(userId: number, type: string): Promise<Chat[]> {
+  async findByUser(userId: number, type: Role): Promise<Chat[]> {
     try {
       let chats: Chat[];
-      if (type === 'student') {
+      if (type === Role.STUDENT) {
         chats = await this.chatRepository.find({
-          where: { student: { id: userId } },
-          relations: ['student.user', 'recruiter.user'],
+          where: { student: { id: userId, role: Role.STUDENT } },
+          relations: ['student', 'recruiter'],
         });
-      } else if (type === 'recruiter') {
+      } else if (type === Role.RECRUITER) {
         chats = await this.chatRepository.find({
-          where: { recruiter: { id: userId } },
-          relations: ['student.user', 'recruiter.user'],
+          where: { recruiter: { id: userId, role: Role.RECRUITER } },
+          relations: ['student', 'recruiter'],
         });
       } else {
         throw new HttpException('Tipo de usuario no válido', 400);

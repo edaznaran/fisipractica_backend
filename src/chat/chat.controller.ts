@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Role } from '../user/enums/role.enum';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { FilterChatDto } from './dto/filter-chat.dto';
@@ -30,7 +31,7 @@ export class ChatController {
   }
 
   @Get(':userId')
-  findByUser(@Param('userId') userId: string, @Query('type') type: string) {
+  findByUser(@Param('userId') userId: string, @Query('type') type: Role) {
     console.log('Finding chats for user:', userId, 'Type:', type);
     return this.chatService.findByUser(+userId, type);
   }

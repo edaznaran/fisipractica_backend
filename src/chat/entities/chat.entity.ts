@@ -7,23 +7,22 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Message } from '../../message/entities/message.entity';
-import { Recruiter } from '../../recruiter/entities/recruiter.entity';
-import { Student } from '../../student/entities/student.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class Chat {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Student, (student) => student.chats, { nullable: true })
+  @ManyToOne(() => User, (student) => student.student_chats, { nullable: true })
   @JoinColumn({ name: 'student_id' })
-  student: Student;
+  student: User;
 
-  @ManyToOne(() => Recruiter, (recruiter) => recruiter.chats, {
+  @ManyToOne(() => User, (recruiter) => recruiter.recruiter_chats, {
     nullable: true,
   })
   @JoinColumn({ name: 'recruiter_id' })
-  recruiter: Recruiter;
+  recruiter: User;
 
   @Column()
   job_id: number;
