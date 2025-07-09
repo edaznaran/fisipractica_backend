@@ -73,16 +73,12 @@ export class UserService {
 
   async findAll() {
     try {
-      const users = await this.userRepository.find({ relations: ['profile'] });
+      const users = await this.userRepository.find({
+        relations: ['student', 'recruiter'],
+      });
       const response = users.map((user) => {
-        return {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          active: user.active,
-          create_date: user.create_date,
-          update_date: user.update_date,
-        };
+        delete user.password; // Elimina la contraseña del objeto de respuesta
+        return user;
       });
 
       return response;
@@ -101,19 +97,13 @@ export class UserService {
     try {
       const user = await this.userRepository.findOne({
         where: { id },
-        relations: ['profile'],
+        relations: ['student', 'recruiter'],
       });
       if (!user) {
         throw new NotFoundException('Usuario no encontrado');
       }
-      return {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        active: user.active,
-        create_date: user.create_date,
-        update_date: user.update_date,
-      };
+      delete user.password; // Elimina la contraseña del objeto de respuesta
+      return user;
     } catch (error) {
       console.error(error);
       if (error instanceof HttpException) {
@@ -124,15 +114,15 @@ export class UserService {
   }
 
   async findByEmail(email: string, role: Role): Promise<User> {
+    let relations: string[] = [];
+    if (role === Role.STUDENT) {
+      relations = ['student'];
+    } else if (role === Role.RECRUITER) {
+      relations = ['recruiter'];
+    }
     const user = await this.userRepository.findOne({
       where: { email, role },
-      relations: [
-        role === Role.STUDENT
-          ? 'student'
-          : role === Role.RECRUITER
-            ? 'recruiter'
-            : '',
-      ],
+      relations: relations,
     });
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');

@@ -31,6 +31,7 @@ export class ChatController {
 
   @Get(':userId')
   findByUser(@Param('userId') userId: string, @Query('type') type: string) {
+    console.log('Finding chats for user:', userId, 'Type:', type);
     return this.chatService.findByUser(+userId, type);
   }
 

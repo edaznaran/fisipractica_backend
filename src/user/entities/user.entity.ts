@@ -35,8 +35,8 @@ export class User {
   @Column({ type: 'bytea', nullable: true })
   photo: Uint8Array;
 
-  @Column()
-  password: string;
+  @Column({ nullable: false })
+  password?: string;
 
   @Column({ enum: Role, nullable: true })
   role: Role;
