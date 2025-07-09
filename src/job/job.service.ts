@@ -57,7 +57,7 @@ export class JobService {
   async findAll() {
     try {
       const jobs = await this.jobRepository.find({
-        relations: ['company', 'userProfile'],
+        relations: ['company', 'recruiter'],
       });
       return jobs;
     } catch (error) {
@@ -73,7 +73,7 @@ export class JobService {
     try {
       const job = await this.jobRepository.findOne({
         where: { id },
-        relations: ['company', 'userProfile'],
+        relations: ['company', 'recruiter'],
       });
       if (!job) {
         throw new NotFoundException(`Trabajo con id ${id} no encontrado`);
@@ -96,7 +96,7 @@ export class JobService {
       const { company_id, user_creator_id, ...jobData } = updateJobDto;
       const job = await this.jobRepository.findOne({
         where: { id },
-        relations: ['company', 'userProfile'],
+        relations: ['company', 'recruiter'],
       });
       if (!job) {
         throw new NotFoundException('Job not found');
@@ -131,7 +131,7 @@ export class JobService {
     try {
       const job = await this.jobRepository.findOne({
         where: { id },
-        relations: ['company', 'userProfile'],
+        relations: ['company', 'recruiter'],
       });
       if (!job) {
         throw new NotFoundException(`Trabajo con id ${id} no encontrado`);

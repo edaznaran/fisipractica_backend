@@ -134,7 +134,7 @@ export class StudentService {
   async findAll() {
     try {
       return await this.studentRepository.find({
-        relations: ['userProfile', 'skills'],
+        relations: ['user', 'skills'],
       });
     } catch (error) {
       console.error(error);
@@ -151,7 +151,7 @@ export class StudentService {
     try {
       const student = await this.studentRepository.findOne({
         where: { id },
-        relations: ['userProfile', 'skills'],
+        relations: ['user', 'skills'],
       });
       if (!student) {
         throw new NotFoundException('Estudiante no encontrado');
@@ -180,7 +180,7 @@ export class StudentService {
       // Actualiza perfil de usuario
       const student = await queryRunner.manager.findOne(Student, {
         where: { id },
-        relations: ['userProfile'],
+        relations: ['user'],
       });
       if (!student) {
         throw new NotFoundException('Estudiante no encontrado');
@@ -191,7 +191,7 @@ export class StudentService {
       if (!user) {
         throw new NotFoundException('Usuario no encontrado');
       }
-      const userProfileDto = {
+      const userDto = {
         first_name: updateStudentDto.first_name,
         last_name: updateStudentDto.last_name,
         email: updateStudentDto.email,
@@ -199,7 +199,7 @@ export class StudentService {
         location: updateStudentDto.location,
         photo: photo ? photo.buffer : user.photo,
       };
-      queryRunner.manager.merge(User, user, userProfileDto);
+      queryRunner.manager.merge(User, user, userDto);
       await queryRunner.manager.save(user);
       // Actualiza datos de estudiante
       const studentDto = {
@@ -272,7 +272,7 @@ export class StudentService {
       //Eliminar estudiantes y sus habilidades
       const student = await queryRunner.manager.findOne(Student, {
         where: { id },
-        relations: ['skills', 'userProfile', 'userProfile.user'],
+        relations: ['skills', 'user'],
       });
       if (!student) {
         throw new NotFoundException('Estudiante no encontrado');

@@ -91,7 +91,7 @@ export class RecruiterService {
   async findAll() {
     try {
       return await this.recruiterRepository.find({
-        relations: ['userProfile', 'company'],
+        relations: ['user', 'company'],
       });
     } catch (error) {
       console.error(error);
@@ -132,7 +132,7 @@ export class RecruiterService {
       // Actualiza perfil de usuario
       const recruiter = await queryRunner.manager.findOne(Recruiter, {
         where: { id },
-        relations: ['userProfile', 'company'],
+        relations: ['user', 'company'],
       });
       if (!recruiter) {
         throw new NotFoundException('Reclutador no encontrado');
@@ -186,7 +186,7 @@ export class RecruiterService {
     try {
       const recruiter = await this.recruiterRepository.findOne({
         where: { id },
-        relations: ['userProfile', 'company'],
+        relations: ['user', 'company'],
       });
       if (!recruiter) {
         throw new NotFoundException('Reclutador no encontrado');
