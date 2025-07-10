@@ -37,6 +37,7 @@ export class ChatService {
         where: {
           student: { id: createChatDto.student_id },
           recruiter: { id: createChatDto.recruiter_id },
+          job_id: createChatDto.job_id,
         },
       });
 
@@ -113,6 +114,7 @@ export class ChatService {
           where: { student: { id: userId, role: Role.STUDENT } },
           relations: ['student', 'recruiter'],
         });
+        chats = chats.filter((chat) => chat.recruiter !== null);
       } else if (type === Role.RECRUITER) {
         chats = await this.chatRepository.find({
           where: { recruiter: { id: userId, role: Role.RECRUITER } },
