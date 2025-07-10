@@ -4,7 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Job } from '../../job/entities/job.entity';
@@ -13,7 +13,7 @@ import { ApplicationStatus } from '../enums/application.enum';
 
 @Entity()
 export class Application {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @ManyToOne(() => Student, (student) => student.applications)
