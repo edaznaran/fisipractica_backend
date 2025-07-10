@@ -45,5 +45,5 @@ export class CreateJobDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  user_creator_id: number;
+  recruiter_creator_id: number;
 }
