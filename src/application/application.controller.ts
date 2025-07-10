@@ -30,6 +30,12 @@ export class ApplicationController {
     return this.applicationService.findAll();
   }
 
+  @Get('student/:studentId')
+  @ApiOperation({ summary: 'Listar postulaciones por estudiante' })
+  findByStudent(@Param('studentId') studentId: string) {
+    return this.applicationService.findByStudent(+studentId);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Buscar postulacion por ID' })
   findOne(@Param('id') id: string) {

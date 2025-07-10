@@ -57,6 +57,26 @@ export class ApplicationService {
     }
   }
 
+  async findByStudent(studentId: number) {
+    try {
+      const applications = await this.applicationRepository.find({
+        where: { student: { id: studentId } },
+        relations: ['student', 'job'],
+      });
+      if (!applications || applications.length === 0) {
+        throw new NotFoundException(
+          `No applications found for student with ID ${studentId}`,
+        );
+      }
+      return applications;
+    } catch (error) {
+      console.error('Error fetching applications by student:', error);
+      throw new InternalServerErrorException(
+        `Failed to fetch applications for student with ID ${studentId}`,
+      );
+    }
+  }
+
   async findOne(id: number) {
     try {
       const application = await this.applicationRepository.findOne({
