@@ -25,7 +25,7 @@ export class JobService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const { company_id, user_creator_id, ...jobData } = createJobDto;
+      const { company_id, recruiter_creator_id, ...jobData } = createJobDto;
       const company = await queryRunner.manager.findOne(Company, {
         where: { id: company_id },
       });
@@ -34,7 +34,7 @@ export class JobService {
       }
 
       const recruiter = await queryRunner.manager.findOne(Recruiter, {
-        where: { id: user_creator_id },
+        where: { id: recruiter_creator_id },
       });
       if (!recruiter) {
         throw new NotFoundException('Reclutador no encontrado');
@@ -116,7 +116,7 @@ export class JobService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const { company_id, user_creator_id, ...jobData } = updateJobDto;
+      const { company_id, recruiter_creator_id, ...jobData } = updateJobDto;
       const job = await this.jobRepository.findOne({
         where: { id },
         relations: ['company', 'recruiter'],
@@ -133,7 +133,7 @@ export class JobService {
       }
 
       const recruiter = await queryRunner.manager.findOne(Recruiter, {
-        where: { id: user_creator_id },
+        where: { id: recruiter_creator_id },
       });
       if (!recruiter) {
         throw new NotFoundException('Reclutador no encontrado');
