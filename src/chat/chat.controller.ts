@@ -22,6 +22,7 @@ export class ChatController {
 
   @Post()
   create(@Body() createChatDto: CreateChatDto) {
+    console.log('Creating chat with data:', createChatDto);
     return this.chatService.create(createChatDto);
   }
 
